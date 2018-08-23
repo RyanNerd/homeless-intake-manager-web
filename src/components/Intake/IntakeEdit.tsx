@@ -1,0 +1,629 @@
+import * as React from "react";
+import {Component, CSSProperties, MouseEvent} from "react";
+import {ContextType, StoreConsumer} from "../StoreContext";
+import {
+        Col,
+        Form,
+        Modal,
+        Button,
+        Checkbox,
+        FormGroup,
+        FormControl,
+        ControlLabel
+} from 'react-bootstrap';
+import SignatureCanvas from 'react-signature-canvas';
+import {intakeModel, IntakeType} from "../../models/IntakeModel";
+import {UpdateLanguage} from "../../utils/utilities";
+import {IntakeProvider} from "../../providers/IntakeProvider";
+import {StorageProvider} from "../../providers/StorageProvider";
+import {MemberProvider} from "../../providers/MemberProvider";
+import {StorageType} from "../../models/StorageModel";
+import {INodeListOf, ITarget} from "../../typings/HtmlInterfaces";
+import {FormEvent} from "react";
+
+interface IStyle extends CSSProperties
+{
+    tabIndex: string;
+}
+
+interface IIntakeEditProps {
+    context: ContextType
+    intakeProvider: IntakeProvider
+    memberProvider: MemberProvider
+    storageProvider: StorageProvider
+    intakeInfo: IntakeType
+    keyboard: boolean
+    language: string
+    onHide: Function
+    show: boolean
+}
+
+type SigpadType = {
+    current: {
+        clear: Function
+        getTrimmedCanvas: Function
+        fromDataURL: Function
+        isEmpty: Function
+    }
+}
+
+const initialState = {
+    signatureChanged: false,
+    shouldShow: false,
+    intakeInfo: intakeModel,
+    language: 'en',
+    canSave: false
+};
+type State = Readonly<typeof initialState>
+
+const today = new Date();
+const currentYear = today.getFullYear();
+
+export const IntakeEdit = (props?: any) => (
+    <StoreConsumer>
+        {(context: ContextType) =>
+            <IntakeEditBase
+                context={context}
+                intakeProvider={new IntakeProvider(context.state.currentUser.AuthKey)}
+                storageProvider={new StorageProvider(context.state.currentUser.AuthKey)}
+                {...props}
+            />
+        }
+    </StoreConsumer>
+);
+
+/**
+ * IntakeEdit class - Intake Edit Modal
+ */
+class IntakeEditBase extends Component<IIntakeEditProps, State>
+{
+    readonly state: State = initialState;
+
+    /**
+     * SignaturePad 3rd party reference
+     */
+    private sigPad = React.createRef() as SigpadType;
+
+    /**
+     * Lifecycle hook - getDerivedStateFromProps
+     *
+     * @param {object} nextProps
+     * @return {object | null}
+     */
+    static getDerivedStateFromProps(nextProps: IIntakeEditProps)
+    {
+        if (nextProps.intakeInfo && nextProps.show) {
+            return {intakeInfo: nextProps.intakeInfo, shouldShow: true};
+        } else {
+            return {shouldShow: false};
+        }
+    }
+
+    /**
+     * On Error handler
+     *
+     * @param {object | string} error
+     */
+    onError(error: object | string)
+    {
+        this.props.context.methods.setError(error);
+    }
+
+    /**
+     * Fires when the modal has played all the animations and is displayed.
+     * Similar to componentDidUpdate()
+     */
+    handleOnEntered()
+    {
+        this.setState({intakeInfo: {...this.props.intakeInfo}, signatureChanged: false},()=>
+        {
+            // If there is a signature for this intake record then we need to load it.
+            if (this.props.intakeInfo.SignatureId) {
+                this.props.storageProvider.read(this.props.intakeInfo.SignatureId)
+                .then((response)=>
+                {
+                    if (response.success) {
+                        this.setSignatureData(response.data.Content);
+                        this.setState({canSave: this.canSave()});
+                    } else {
+                        this.onError(response);
+                    }
+                })
+                .catch((error)=>
+                {
+                    this.onError(error);
+                });
+            }
+
+            // Force a re-translation when the modal is made visible
+            let l10n = document['l10n'];
+            UpdateLanguage(this.props.language);
+            l10n.translateDocument()
+            .then(()=>{
+                // We are golden
+            });
+
+            this.setState({canSave: this.canSave()});
+
+            // Work-around for React stupidity in not allowing nulls as a value on controlled elements
+            if (!this.state.intakeInfo.Id) {
+                let named = document.querySelectorAll('[name]') as INodeListOf;
+                for (const namedElement of named) {
+                    if (namedElement.value) {
+                        namedElement.value = intakeModel[namedElement.name];
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Fires when the Clear Signature button is clicked
+     *
+     * @param {Event} e
+     */
+    clearSignature(e: MouseEvent<Button>)
+    {
+        e.preventDefault();
+
+        this.sigPad.current.clear();
+
+        this.setState({canSave: false});
+    }
+
+    /**
+     * Get the signature image as a data URL
+     *
+     * @return {string} base64string image data
+     */
+    getSignatureData()
+    {
+        return this.sigPad.current.getTrimmedCanvas().toDataURL('image/png');
+    }
+
+    /**
+     * Set the signature image from a data URL string
+     *
+     * @param {string} signature base64string image data
+     */
+    setSignatureData(signature: string)
+    {
+        this.sigPad.current.fromDataURL(signature);
+    }
+
+    /**
+     * Return true if the signature pad is blank
+     *
+     * @return {boolean}
+     */
+    hasSignature()
+    {
+        return !this.sigPad.current.isEmpty();
+    }
+
+    /**
+     * Fires when the modal is closing either from cancel or save
+     *
+     * @param {Event} e
+     * @param {bool} shouldSave
+     */
+    handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
+    {
+        if (!shouldSave)
+        {
+            this.props.onHide(false);
+            return;
+        }
+
+        let intakeInfo = this.state.intakeInfo;
+
+        // Do we need to save the signature image?
+        if (this.state.signatureChanged && intakeInfo) {
+            let storageData =
+            {
+                Id: intakeInfo.SignatureId,
+                Content: this.getSignatureData(),
+                MimeType: 'image/png'
+            } as StorageType;
+
+            if (intakeInfo.SignatureId) {
+                this.props.storageProvider.update(storageData)
+                .then((response) =>
+                {
+                    if (response.success) {
+                        intakeInfo.SignatureId = response.data.Id;
+                        this.updateIntakeRecord(intakeInfo);
+                    } else {
+                        this.onError(response);
+                    }
+                })
+                .catch((error) =>
+                {
+                    this.onError(error);
+                });
+            } else {
+                this.props.storageProvider.create(storageData)
+                .then((response) =>
+                {
+                    if (response.success) {
+                        intakeInfo.SignatureId = response.data.Id;
+                        this.updateIntakeRecord(intakeInfo);
+                    } else {
+                        this.onError(response);
+                    }
+                })
+                .catch((error) =>
+                {
+                    this.onError(error);
+                });
+            }
+        } else {
+            this.updateIntakeRecord(intakeInfo);
+        }
+    }
+
+    /**
+     * Insert or update the given Intake record
+     *
+     * @param {object} intakeInfo IntakeInfo record object
+     */
+    updateIntakeRecord(intakeInfo: IntakeType)
+    {
+        if (intakeInfo.Id) {
+            this.props.intakeProvider.update(intakeInfo)
+            .then((response) =>
+            {
+                if (response.status === 200) {
+                    this.props.onHide(true);
+                } else {
+                    this.onError(response);
+                }
+            })
+            .catch((error) =>
+            {
+                this.onError(error);
+            });
+        } else {
+            this.props.intakeProvider.create(intakeInfo)
+            .then((response) =>
+            {
+                if (response.status === 200) {
+                    this.props.onHide(true);
+                } else {
+                    this.onError(response);
+                }
+            })
+            .catch((error) =>
+            {
+                this.onError(error);
+            });
+        }
+    }
+
+    /**
+     * Fires when a text field or checkbox is changing.
+     *
+     * @param {Event} e
+     */
+    handleOnChange(e: FormEvent<FormControl>)
+    {
+        let intakeInfo = this.state.intakeInfo as IntakeType;
+
+        const target = e.target as ITarget;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+        intakeInfo[name] = value;
+
+        this.setState({intakeInfo: intakeInfo},()=>
+        {
+            this.setState({canSave: this.canSave()});
+        });
+    }
+
+    handleSignatureChanged()
+    {
+        this.setState({signatureChanged: true, canSave: this.canSave()});
+    }
+
+    //////////////
+    // Validations
+    //////////////
+
+    /**
+     * Given the current state of the year, month and day intake fields return 'error' if not valid or null otherwise.
+     *
+     * @return {string | null}
+     */
+    intakeDateValid(): "success" | "warning" | "error" | null
+    {
+        const intakeInfo = this.state.intakeInfo;
+        const intakeDay = parseInt(intakeInfo.IntakeDay.toString());
+        const intakeMonth = parseInt(intakeInfo.IntakeMonth.toString());
+        const intakeYear = parseInt(intakeInfo.IntakeYear.toString());
+
+        if (!intakeYear ||
+            !intakeDay  ||
+            !intakeMonth) {
+            return 'error';
+        }
+
+        if (intakeDay > 31 || intakeDay < 1) {
+            return 'error';
+        }
+
+        if (intakeMonth > 12 || intakeMonth < 1) {
+            return 'error';
+        }
+
+        if (intakeYear < 1000 || intakeYear > currentYear) {
+            return 'error';
+        }
+
+
+        // Intake date can not be set to the future.
+        const intakeDate = new Date(intakeYear + '-' + intakeMonth + '-' + intakeDay);
+        const today = new Date();
+        if (intakeDate > today) {
+            return 'error';
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns true if all intake data fields have valid data.
+     *
+     * @return {boolean}
+     */
+    canSave()
+    {
+        const intakeInfo = this.state.intakeInfo;
+        // Intake date must be valid (intakeDateValid() will be null if the date is valid).
+        if (!this.intakeDateValid()) {
+            // There must be at least one item check marked.
+            if (intakeInfo.FoodBox    ||
+                intakeInfo.Perishable ||
+                intakeInfo.Camper     ||
+                intakeInfo.Diaper) {
+
+                if (this.hasSignature()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    render()
+    {
+        const context = this.props.context;
+
+        if (!this.state.intakeInfo) {
+            return (false)
+        }
+
+        return(
+            <Modal
+                show={this.state.shouldShow}
+                onHide={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                onEntered={()=>this.handleOnEntered()}
+                keyboard={this.props.keyboard}
+            >
+                <Modal.Header>
+                    <Modal.Title>Pantry Intake</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form horizontal>
+                        <FormGroup controlId="intake-food-box">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={5}>
+                                <Checkbox
+                                    name="FoodBox"
+                                    checked={this.state.intakeInfo.FoodBox}
+                                    onChange={(e)=>this.handleOnChange(e)}
+                                >
+                                    <span data-l10n-id="en-food-box">Food Box</span>
+                                </Checkbox>
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-perishables">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={5}>
+                                <Checkbox
+                                    name="Perishable"
+                                    checked={this.state.intakeInfo.Perishable}
+                                    onChange={(e)=>this.handleOnChange(e)}
+                                >
+                                    <span data-l10n-id="en-perishables">Perishables</span>
+                                </Checkbox>
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-camper">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={5}>
+                                <Checkbox
+                                    name="Camper"
+                                    checked={this.state.intakeInfo.Camper}
+                                    onChange={(e)=>this.handleOnChange(e)}
+                                >
+                                    <span data-l10n-id={"en-camper"}>Camper</span>
+                                </Checkbox>
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-diaper">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={5}>
+                                <Checkbox
+                                    name="Diaper"
+                                    checked={this.state.intakeInfo.Diaper}
+                                    onChange={(e)=>this.handleOnChange(e)}
+                                >
+                                    <span data-l10n-id={"en-diaper"}>Diaper</span>
+                                </Checkbox>
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-notes">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={10}>
+                                <FormControl
+                                    name="Notes"
+                                    type="text"
+                                    data-l10n-id="en-notes"
+                                    placeholder="Notes"
+                                    value={this.state.intakeInfo.Notes}
+                                    onChange={(e)=>this.handleOnChange(e)}
+                                />
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-signature">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={10}>
+                                    <SignatureCanvas
+                                        id={"my-sig"}
+                                        ref={this.sigPad}
+                                        backgroundColor="#234AC5"
+                                        penColor="white"
+                                        canvasProps={{width: 470, height: 200, className: "sig-pad"}}
+                                        onEnd={()=>this.handleSignatureChanged()}
+                                    />
+                            </Col>
+                        </FormGroup>
+
+                        <FormGroup controlId="intake-signature-button">
+                            <Col componentClass={ControlLabel} sm={1}/>
+                            <Col sm={2}>
+                                <Button
+                                    onClick={(e: MouseEvent<Button>) => this.clearSignature(e)}
+                                >
+                                    Clear Signature
+                                </Button>
+                            </Col>
+                        </FormGroup>
+
+                        {this.state.intakeInfo.Id &&
+                            <FormGroup controlId="intake-weight-foodbox">
+                                <Col
+                                    componentClass={ControlLabel}
+                                    sm={4}
+                                >
+                                    <span data-l10n-id="en-food-box-weight">Food Box Weight</span>
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl
+                                        name="FoodBoxWeight"
+                                        type="text"
+                                        placeholder="Food Box Weight"
+                                        maxLength={8}
+                                        value={this.state.intakeInfo.FoodBoxWeight}
+                                        onChange={(e) => this.handleOnChange(e)}
+                                    />
+                                </Col>
+                            </FormGroup>
+                        }
+
+                        {this.state.intakeInfo.Id &&
+                            <FormGroup controlId="intake-weight-perishables">
+                                <Col
+                                    componentClass={ControlLabel}
+                                    sm={4}
+                                >
+                                    <span data-l10n-id="en-perishable-weight">Perishables Weight</span>
+                                </Col>
+                                <Col sm={2}>
+                                    <FormControl
+                                        name="PerishableWeight"
+                                        type="text"
+                                        placeholder="Perishables Weight"
+                                        maxLength={8}
+                                        value={this.state.intakeInfo.PerishableWeight}
+                                        onChange={(e) => this.handleOnChange(e)}
+                                    />
+                                </Col>
+                            </FormGroup>
+                        }
+
+                        <FormGroup
+                            controlId="intake-date"
+                            validationState={this.intakeDateValid()}
+                        >
+                            <Col
+                                componentClass={ControlLabel}
+                                sm={4}
+                            >
+                                <span data-l10n-id="en-date">Date</span>
+                            </Col>
+                            <Col sm={2}>
+                                <span data-l10n-id="en-year">Year</span>
+                                <FormControl
+                                    name="IntakeYear"
+                                    type="text"
+                                    data-l10n-id="en-year"
+                                    placeholder="Year"
+                                    maxLength={4}
+                                    value={this.state.intakeInfo.IntakeYear}
+                                    onChange={(e) => this.handleOnChange(e)}
+                                />
+                            </Col>
+                            <Col sm={2}>
+                                <span data-l10n-id="en-month">Month</span>
+                                <FormControl
+                                    name="IntakeMonth"
+                                    type="text"
+                                    data-l10n-id="en-month"
+                                    placeholder="Month"
+                                    maxLength={2}
+                                    value={this.state.intakeInfo.IntakeMonth}
+                                    onChange={(e) => this.handleOnChange(e)}
+                                />
+                            </Col>
+                            <Col sm={2}>
+                                <span data-l10n-id="en-day">Day</span>
+                                <FormControl
+                                    name="IntakeDay"
+                                    type="text"
+                                    data-l10n-id="en-day"
+                                    placeholder="Day"
+                                    maxLength={2}
+                                    value={this.state.intakeInfo.IntakeDay}
+                                    onChange={(e) => this.handleOnChange(e)}
+                                />
+                            </Col>
+                        </FormGroup>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        disabled={!context.state.currentUser.IsAdmin || !this.state.intakeInfo.Id}
+                        style={{position: "absolute", left: "15px", tabIndex: "-1"} as IStyle}
+                        bsStyle="danger"
+                        onClick={() =>
+                        {
+                            alert('Delete under construction')
+                        }}
+                    >
+                        Delete
+                    </Button>
+
+                    <Button
+                        onClick={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                    >
+                        <span data-l10n-id="en-cancel">Cancel</span>
+                    </Button>
+                    <Button
+                        disabled={!this.state.canSave}
+                        onClick={(e: MouseEvent<Button>) => this.handleModalDismiss(e, true)}
+                        bsStyle="primary"
+                    >
+                        <span data-l10n-id="en-save-changes">Save changes</span>
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+}

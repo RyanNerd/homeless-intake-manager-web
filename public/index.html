@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Switchpoint Pantry Portal</title>
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <meta name="defaultLanguage" content="en-US">
+  <meta name="availableLanguages" content="en-US">
+  <link rel="localization" href="myApp.en-US.ftl">
+  <script type="application/javascript" defer src="l20.min.js"></script>
+
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <!-- Detect if IE is being used & if so display message and bail -->
+  <script type="application/javascript">
+      function appendHTML() {
+          var wrapper = document.createElement("div");
+          wrapper.innerHTML = '\
+<div style="color: red; margin-top: 25%; text-align: center">\
+<h1>Internet Explorer is not supported</h1>\
+<h2>Please reload using a modern browser</h2>\
+</div>\
+';
+          document.body.appendChild(wrapper);
+      }
+      // See: https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+      var isIE = /*@cc_on!@*/false || !!document.documentMode;
+      if (isIE) {
+          var appElem = window.document.getElementById('app');
+          appElem.parentNode.removeChild(appElem);
+          appendHTML();
+          throw 'IE Not supported!';
+      }
+  </script>
+
+  <script src="/dist/bundle.js"></script>
+</body>
+
+</html>
