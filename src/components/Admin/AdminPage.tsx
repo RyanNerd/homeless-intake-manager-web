@@ -17,9 +17,9 @@ interface AdminPageProps {
     context: ContextType;
 }
 
-const initalState = { key: 'users'};
+const initialState = { key: 'users'};
 
-type State = Readonly<typeof initalState>
+type State = Readonly<typeof initialState>
 
 export const AdminPage = (props?: any) => (
     <StoreConsumer>
@@ -37,7 +37,7 @@ export const AdminPage = (props?: any) => (
  */
 class AdminPageBase extends Component<AdminPageProps, State>
 {
-    readonly state: State = initalState;
+    readonly state: State = initialState;
 
     /**
      * Handle tab changed event

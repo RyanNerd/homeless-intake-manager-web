@@ -1,36 +1,40 @@
-import React, { Component, createRef } from 'react';
-import PropTypes from "prop-types";
+import * as React from "react";
+import {ChangeEvent, Component, createRef, CSSProperties} from "react";
 import {
         imageFileToDataURL,
         UUID
 } from "../utils/utilities";
 
+interface Props {
+    onImageChanged: Function
+    emptyImage?: string
+    readOnly: boolean
+    height: number
+    width: number
+    src?: string
+};
+
 const emptyImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII=";
 const imgId = UUID();
+const stringOrNull: string | null = null;
+const initialState = {
+    imgId: imgId,
+    src: stringOrNull
+};
+
+type State = Readonly<typeof initialState>
 
 /**
  * ImageDrop Class
  *
  * TODO: Allow images to be dropped
  */
-export class ImageDrop extends Component
+export class ImageDrop extends Component<Props, State>
 {
-    static propTypes = {
-        onImageChanged: PropTypes.func,
-        emptyImage: PropTypes.string,
-        readOnly: PropTypes.bool,
-        height: PropTypes.number,
-        width: PropTypes.number,
-        src: PropTypes.string
-    };
-
-    state = {
-        imgId: imgId,
-        src: null
-    };
-
-    fileInput = createRef();
+    readonly state: State = initialState;
+    private fileInput: React.RefObject<HTMLInputElement> = createRef();
     imgClicked = false;
+
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
@@ -39,7 +43,7 @@ export class ImageDrop extends Component
      * @param {object} prevState
      * @return {object | null}
      */
-    static getDerivedStateFromProps(nextProps, prevState)
+    static getDerivedStateFromProps(nextProps: Props, prevState: State)
     {
         // Do we have src in the props?
         if (nextProps.src) {
@@ -69,7 +73,7 @@ export class ImageDrop extends Component
      *
      * @param {Event} e
      */
-    handleImageClick(e)
+    handleImageClick(e: React.MouseEvent<HTMLImageElement>)
     {
         e.preventDefault();
 
@@ -83,22 +87,22 @@ export class ImageDrop extends Component
         if (this.fileInput) {
             // Set the imgClicked flag in the affirmative and fake a click on our hidden <input type="file"> element.
             this.imgClicked = true;
-            this.fileInput.click();
+            this.fileInput.current.click();
         }
     }
 
     /**
      * Fires when the user has selected a single file or clicked cancel.
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
-    handleFileChange(e)
+    handleFileChange(e: ChangeEvent<HTMLInputElement>)
     {
         e.preventDefault();
 
         // Is only one file selected?
-        if (this.fileInput.files.length === 1) {
-            const file = this.fileInput.files[0];
+        if (this.fileInput.current.files.length === 1) {
+            const file = this.fileInput.current.files[0];
 
             // File selected MUST be of the type png, jpeg, svg, or gif
             if (file.type === 'image/png'  ||
@@ -133,7 +137,7 @@ export class ImageDrop extends Component
      *
      * @param e
      */
-    shouldFileDialogOpen(e)
+    shouldFileDialogOpen(e: React.MouseEvent<HTMLInputElement>)
     {
         if (!this.imgClicked) {
             e.preventDefault();
@@ -145,10 +149,12 @@ export class ImageDrop extends Component
 
     render()
     {
+        const imageStyle = {objectFit: "contain", cursor: this.props.readOnly ? 'default' : 'pointer'} as CSSProperties;
+
         return(
             <div>
                 <img
-                    style={{objectFit: "contain"}}
+                    style={imageStyle}
                     id={this.state.imgId}
                     src={this.state.src}
                     width={this.props.width || 175}
@@ -160,10 +166,7 @@ export class ImageDrop extends Component
                     type="file"
                     style={{opacity: 0, zIndex: -999999}}
                     accept="image/*"
-                    ref={input =>
-                    {
-                        this.fileInput = input;
-                    }}
+                    ref={this.fileInput}
                     onChange={(e)=>this.handleFileChange(e)}
                     onClick={(e)=>this.shouldFileDialogOpen(e)}
                 />
