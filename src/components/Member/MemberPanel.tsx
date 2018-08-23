@@ -180,7 +180,15 @@ class MemberPanelBase extends Component<MemberPanelProps, State>
         return (
             <Panel bsStyle="primary">
                 <Panel.Heading>
-                    {context.state.currentHousehold.IsDemo && <Button disabled={true} bsStyle="danger" style={{marginRight: "15px", cursor: "default"}}>DEMO</Button>}
+                    {context.state.currentHousehold.IsDemo ?
+                        (
+                            <Button disabled={true} bsStyle="danger" style={{marginRight: "15px", cursor: "default"}}>
+                                DEMO
+                            </Button>
+                        ) : (
+                            <span> </span>
+                        )
+                    }
                     {this.state.memberInfo.FirstName + ' ' + this.state.memberInfo.LastName}
                     {!this.state.memberInfo.Active && <span style={{color: "red", paddingLeft: "5px"}}>(INACTIVE)</span>}
                 </Panel.Heading>
