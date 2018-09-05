@@ -68,7 +68,7 @@ export class PovertyGrid extends Component<PovertyGridProps, {}>
                         <span>Household Size</span>
                     </th>
                     <th
-                        className="user-grid-header"
+                        className="poverty-grid-header"
                     >
                         <span>Monthly</span>
                     </th>

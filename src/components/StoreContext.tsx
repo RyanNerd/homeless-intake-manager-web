@@ -87,14 +87,14 @@ export class StoreProvider extends Component<StoreProviderProps, State>
      *
      * @type {Array}
      */
-    subscribers: CallbackObject[] = [];
+    private subscribers: CallbackObject[] = [];
 
     /**
      * Middleware call back objects
      *
      * @type {Array}
      */
-    middleware: CallbackObject[] = [];
+    private middleware: CallbackObject[] = [];
 
     /**
      * Fires each time the Store state changes
@@ -224,7 +224,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
                         setCurrentMemberPhoto: (photo: string | null)=>this._statechange('currentMemberPhoto', photo),
                         setPovertyData: (povertyData: PovertyType)=>this._statechange('povertyData', povertyData),
                         setError: (error: string | object)=>this._statechange('error', error)
-                    },
+                    }
                 } as any}
             >
                 {this.props.children}

@@ -382,9 +382,8 @@ class HouseholdPageBase extends Component<Props, State>
                                     onFocus={()=>this.setState({householdNameHasFocus: true})}
                                     onBlur={()=>this.setState({householdNameHasFocus: false})}
                                 />
-                                {this.state.householdNameHasFocus &&
-                                !context.state.currentHousehold.HouseholdName &&
-                                <HelpBlock>Usually the last name of the head of household</HelpBlock>
+                                {this.state.householdNameHasFocus && !context.state.currentHousehold.HouseholdName &&
+                                    <HelpBlock>Usually the last name of the head of household</HelpBlock>
                                 }
                             </Col>
                         </FormGroup>
