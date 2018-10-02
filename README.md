@@ -10,12 +10,18 @@ There are two parts to homeless-intake-manager:
 You can clone these repos with:
 
 `git clone RyanNerd/homeless-intake-manager-web`
+
 `git clone RyanNerd/homeless-intake-manager-app`
+
+To Install and run the web component:
 
 `cd homeless-intake-manager-web`
 `npm install`
 
 Look at the `.env-example` and create a `.env` file that matches the example configuration.
-Once you have set up your `.env` you can run a dev web server with:
+You should also have the web service running from `homeless-intake-manager-app`
 
-`npm run dev-server`
+Once you have set up your `.env` and have the web service running you can run a development
+ web server with:
+
+`npm run dev`
