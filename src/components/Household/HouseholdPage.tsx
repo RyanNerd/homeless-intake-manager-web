@@ -82,19 +82,20 @@ class HouseholdPageBase extends Component<Props, State>
      /**
      * Lifecycle hook - componentDidUpdate
      *
-     * @param {object} prevProps
+     * @param {Props} prevProps
      */
     componentDidUpdate(prevProps: Props)
     {
         const context = this.props.context;
 
+        // Did the household change?
         if (context.state.currentHousehold.Id !== prevProps.context.state.currentHousehold.Id) {
+            // Is there an existing household?
             if (context.state.currentHousehold.Id) {
                 this.populateMemberGrid(context.state.currentHousehold.Id);
             } else {
                 this.setState({members: null});
             }
-
 
             // Work around for React stupidity
             if (context.state.currentHousehold.Id === null) {
@@ -132,7 +133,7 @@ class HouseholdPageBase extends Component<Props, State>
     /**
      * Handle when text, checkboxes, etc. are changed.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleOnChange(e: FormEvent<FormControl>)
     {
@@ -212,7 +213,7 @@ class HouseholdPageBase extends Component<Props, State>
     /**
      * Fires when when Add Member is clicked.
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleAddMember(e: MouseEvent<Button>)
     {
@@ -274,7 +275,7 @@ class HouseholdPageBase extends Component<Props, State>
     /**
      * Fires when the Save button for household has been clicked.
      *
-     * @param {Event} e
+     * @param {MouseEvent} [e]
      */
     handleSave(e?: MouseEvent<Button>)
     {
@@ -331,6 +332,7 @@ class HouseholdPageBase extends Component<Props, State>
     {
         const context = this.props.context;
 
+        // Is there an existing household? If not do not render.
         if (!context.state.currentHousehold) {
             return (false);
         }
@@ -338,16 +340,16 @@ class HouseholdPageBase extends Component<Props, State>
         return (
             <div>
                 {this.state.showMemberBadge &&
-                <NewWindow
-                    onUnload={()=>{this.setState({showMemberBadge: false})}}
-                    title="Print Member Badge"
-                >
-                    <MemberBadge
-                        memberInfo={context.state.currentMember}
-                        householdSize={context.state.householdSize}
-                        photo={context.state.currentMemberPhoto}
-                    />
-                </NewWindow>
+                    <NewWindow
+                        onUnload={()=>{this.setState({showMemberBadge: false})}}
+                        title="Print Member Badge"
+                    >
+                        <MemberBadge
+                            memberInfo={context.state.currentMember}
+                            householdSize={context.state.householdSize}
+                            photo={context.state.currentMemberPhoto}
+                        />
+                    </NewWindow>
                 }
 
                 <Form horizontal>
@@ -360,12 +362,12 @@ class HouseholdPageBase extends Component<Props, State>
                     />
 
                     {this.state.showSaved &&
-                    <ToasterAlert
-                        timeout={3000}
-                        onDismiss={()=>{this.setState({showSaved: false})}}
-                    >
-                        <b>Household Updated</b>
-                    </ToasterAlert>
+                        <ToasterAlert
+                            timeout={3000}
+                            onDismiss={()=>{this.setState({showSaved: false})}}
+                        >
+                            <b>Household Updated</b>
+                        </ToasterAlert>
                     }
 
                     <Col md={4}>
@@ -639,12 +641,12 @@ class HouseholdPageBase extends Component<Props, State>
                         </FormGroup>
 
                         {this.state.members && this.state.members.length > 0 &&
-                        <FormGroup controlId="household-members">
-                            <MemberGrid
-                                members={this.state.members}
-                                onMemberSelected={(id: number) => this.handleMemberSelected(id)}
-                            />
-                        </FormGroup>
+                            <FormGroup controlId="household-members">
+                                <MemberGrid
+                                    members={this.state.members}
+                                    onMemberSelected={(id: number) => this.handleMemberSelected(id)}
+                                />
+                            </FormGroup>
                         }
 
                         {/* Only display the Add Member if we have an existing Household record */}
