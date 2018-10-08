@@ -6,7 +6,7 @@ import {
 } from 'react-bootstrap';
 import {PovertyType} from "../../models/PovertyModel";
 
-interface PovertyGridProps {
+interface Props {
     onPovertySelected: Function
     povertyData: PovertyType[]
 }
@@ -14,7 +14,7 @@ interface PovertyGridProps {
 /**
  * PovertyGrid Class
  */
-export class PovertyGrid extends Component<PovertyGridProps, {}>
+export class PovertyGrid extends Component<Props, {}>
 {
     /**
      * Handle when a poverty record is selected from the grid
