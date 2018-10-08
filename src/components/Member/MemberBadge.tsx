@@ -5,7 +5,7 @@ import {MemberType} from "../../models/MemberModel";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface MemberBadgeProps {
+interface Props {
     memberInfo: MemberType
     householdSize: number
     photo: string
@@ -15,7 +15,7 @@ interface MemberBadgeProps {
  * MemberBadge Class
  * Simple layout page for Member Info to be printed
  */
-export class MemberBadge extends Component<MemberBadgeProps, {}>
+export class MemberBadge extends Component<Props, {}>
 {
     render()
     {
