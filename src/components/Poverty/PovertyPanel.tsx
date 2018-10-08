@@ -54,6 +54,7 @@ class PovertyPanelBase extends Component<Props, State>
             const doc = document as IDocument;
             const l10n = doc.l10n;
 
+            // Sanity check
             if (!l10n) {
                 return;
             }
