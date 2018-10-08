@@ -18,7 +18,7 @@ import {StorageType} from "../../models/StorageModel";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface MemberPanelProps {
+interface Props {
     onMemberImageChanged: Function
     storageProvider: StorageProvider
     memberProvider: MemberProvider
@@ -51,7 +51,7 @@ export const MemberPanel = (props?: any) => (
 /**
  * MemberPanel Class
  */
-class MemberPanelBase extends Component<MemberPanelProps, State>
+class MemberPanelBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -164,6 +164,7 @@ class MemberPanelBase extends Component<MemberPanelProps, State>
 
     render()
     {
+        // Do we have a member record? If not do not render.
         if (!this.state.memberInfo) {
             return (false);
         }
