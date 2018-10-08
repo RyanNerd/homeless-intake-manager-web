@@ -17,7 +17,7 @@ import {PovertyType} from "../../models/PovertyModel";
 import {FormEvent} from "react";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface PovertyEditProps {
+interface Props {
     povertyProvider: PovertyProvider
     povertyInfo: PovertyType
     keyboard: boolean
@@ -50,7 +50,7 @@ export const PovertyEdit = (props?: any) => (
 /**
  * PovertyEdit Class
  */
-class PovertyEditBase extends Component<PovertyEditProps, State>
+class PovertyEditBase extends Component<Props, State>
 {
 
     readonly state: State = initialState;
@@ -61,7 +61,7 @@ class PovertyEditBase extends Component<PovertyEditProps, State>
      * @param {object} nextProps
      * @return {object || null}
      */
-    static getDerivedStateFromProps(nextProps: PovertyEditProps)
+    static getDerivedStateFromProps(nextProps: Props)
     {
         if (nextProps.show) {
             return {povertyInfo: nextProps.povertyInfo, shouldShow: true};
@@ -83,8 +83,8 @@ class PovertyEditBase extends Component<PovertyEditProps, State>
     /**
      * Fires when the modal is closing either from cancel or save)
      *
-     * @param {Event} e
-     * @param {bool} shouldSave
+     * @param {MouseEvent} e
+     * @param {boolean} shouldSave
      */
     handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
@@ -111,7 +111,7 @@ class PovertyEditBase extends Component<PovertyEditProps, State>
     /**
      * Fires when a text field or checkbox is changing.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleOnChange(e: FormEvent<FormControl>)
     {
@@ -131,6 +131,7 @@ class PovertyEditBase extends Component<PovertyEditProps, State>
     {
         const povertyInfo = this.state.povertyInfo;
 
+        // Do we have a poverty record? If not then do not render.
         if (!povertyInfo) {
             return (false);
         }
