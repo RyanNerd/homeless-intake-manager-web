@@ -10,7 +10,7 @@ import {
 } from "../../utils/utilities";
 import {IntakeType} from "../../models/IntakeModel";
 
-interface IntakeGridProps
+interface Props
 {
     onIntakeSelected: Function
     language: string,
@@ -28,7 +28,7 @@ type State = Readonly<typeof initialState>
 /**
  * IntakeGrid Class - Intake Table
  */
-export class IntakeGrid extends Component<IntakeGridProps, State>
+export class IntakeGrid extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -45,15 +45,14 @@ export class IntakeGrid extends Component<IntakeGridProps, State>
     /**
      * Handle when an intake is selected from the intake grid
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      * @param {int} id
      */
     handleIntakeSelected(e: MouseEvent<Button>, id: number | null)
     {
-        if (e) {
-            let intakeInfo = getRecordById(id, this.props.intakes);
-            this.props.onIntakeSelected(intakeInfo);
-        }
+        e.preventDefault();
+        let intakeInfo = getRecordById(id, this.props.intakes);
+        this.props.onIntakeSelected(intakeInfo);
     }
 
     render()
