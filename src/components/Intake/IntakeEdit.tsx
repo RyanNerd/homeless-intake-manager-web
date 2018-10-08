@@ -26,7 +26,7 @@ interface IStyle extends CSSProperties
     tabIndex: string;
 }
 
-interface IIntakeEditProps {
+interface Props {
     context: ContextType
     intakeProvider: IntakeProvider
     memberProvider: MemberProvider
@@ -75,7 +75,7 @@ export const IntakeEdit = (props?: any) => (
 /**
  * IntakeEdit class - Intake Edit Modal
  */
-class IntakeEditBase extends Component<IIntakeEditProps, State>
+class IntakeEditBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -87,10 +87,10 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @return {object | null}
+     * @param {Props} nextProps
+     * @return {Props | null}
      */
-    static getDerivedStateFromProps(nextProps: IIntakeEditProps)
+    static getDerivedStateFromProps(nextProps: Props)
     {
         if (nextProps.intakeInfo && nextProps.show) {
             return {intakeInfo: nextProps.intakeInfo, shouldShow: true};
@@ -160,7 +160,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     /**
      * Fires when the Clear Signature button is clicked
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     clearSignature(e: MouseEvent<Button>)
     {
@@ -176,7 +176,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
      *
      * @return {string} base64string image data
      */
-    getSignatureData()
+    getSignatureData(): string
     {
         return this.sigPad.current.getTrimmedCanvas().toDataURL('image/png');
     }
@@ -196,7 +196,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
      *
      * @return {boolean}
      */
-    hasSignature()
+    hasSignature(): boolean
     {
         return !this.sigPad.current.isEmpty();
     }
@@ -204,8 +204,8 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     /**
      * Fires when the modal is closing either from cancel or save
      *
-     * @param {Event} e
-     * @param {bool} shouldSave
+     * @param {MouseEvent} e
+     * @param {boolean} shouldSave
      */
     handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
@@ -265,7 +265,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     /**
      * Insert or update the given Intake record
      *
-     * @param {object} intakeInfo IntakeInfo record object
+     * @param {IntakeType} intakeInfo IntakeInfo record object
      */
     updateIntakeRecord(intakeInfo: IntakeType)
     {
@@ -303,7 +303,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     /**
      * Fires when a text field or checkbox is changing.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleOnChange(e: FormEvent<FormControl>)
     {
@@ -320,6 +320,9 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
         });
     }
 
+    /**
+     * Fires when the signature pad has changed.
+     */
     handleSignatureChanged()
     {
         this.setState({signatureChanged: true, canSave: this.canSave()});
@@ -375,7 +378,7 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
      *
      * @return {boolean}
      */
-    canSave()
+    canSave(): boolean
     {
         const intakeInfo = this.state.intakeInfo;
         // Intake date must be valid (intakeDateValid() will be null if the date is valid).
@@ -399,8 +402,9 @@ class IntakeEditBase extends Component<IIntakeEditProps, State>
     {
         const context = this.props.context;
 
+        // Do we have an intake record? If not do not render.
         if (!this.state.intakeInfo) {
-            return (false)
+            return (false);
         }
 
         return(
