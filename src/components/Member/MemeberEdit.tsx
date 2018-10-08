@@ -22,7 +22,7 @@ const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const BADGE_LENGTH_MAX = 6;
 
-interface MemberEditProps {
+interface Props {
     householdProvider: HouseholdProvider
     memberProvider: MemberProvider
     memberInfo: MemberType
@@ -61,7 +61,7 @@ export const MemberEdit = (props?: any) => (
 /**
  * MemberEdit Class Modal
  */
-class MemberEditBase extends Component<MemberEditProps, State>
+class MemberEditBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -71,7 +71,7 @@ class MemberEditBase extends Component<MemberEditProps, State>
      * @param {object} nextProps
      * @return {object | null}
      */
-    static getDerivedStateFromProps(nextProps: MemberEditProps)
+    static getDerivedStateFromProps(nextProps: Props)
     {
         if (nextProps.memberInfo && nextProps.show) {
             return {memberInfo: nextProps.memberInfo, shouldShow: true};
@@ -171,7 +171,7 @@ class MemberEditBase extends Component<MemberEditProps, State>
     /**
      * Fires when a text field or checkbox is changing.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleOnChange(e: FormEvent<FormControl>)
     {
@@ -192,7 +192,7 @@ class MemberEditBase extends Component<MemberEditProps, State>
     /**
      * Main validator
      *
-     * @param {string} name The name of the field to be validated.
+     * @param {string} [name] The name of the field to be validated.
      */
     validate(name?: string)
     {
@@ -227,9 +227,7 @@ class MemberEditBase extends Component<MemberEditProps, State>
     }
 
     /**
-     * Returns true if the data is in a valid state that changes can be saved.
-     *
-     * @return {boolean}
+     * Set save state to true if the data is in a valid state that changes can be saved.
      */
     canSave()
     {
