@@ -7,7 +7,7 @@ import {PovertyProvider} from "../../providers/PovertyProvider";
 import { ContextType } from "../StoreContext";
 import {PovertyType} from "../../models/PovertyModel";
 
-interface PovertyPageProps {
+interface Props {
     context: ContextType
     povertyProvider: PovertyProvider;
 }
@@ -34,7 +34,7 @@ export const PovertyPage = (props?: any) => (
 /**
  * PovertyPage Class
  */
-class PovertyPageBase extends Component<PovertyPageProps, State>
+class PovertyPageBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -62,9 +62,10 @@ class PovertyPageBase extends Component<PovertyPageProps, State>
      *
      * @param {object} poverty
      */
-    protected onPovertySelected(poverty: object)
+    protected onPovertySelected(poverty: PovertyType)
     {
-        let povertyInfo = {...poverty} as PovertyType;
+
+        let povertyInfo = {...poverty};
         this.setState({povertyInfo: povertyInfo, showPovertyEdit: true});
     }
 
@@ -120,7 +121,7 @@ class PovertyPageBase extends Component<PovertyPageProps, State>
                 {context.state.povertyData &&
                     <PovertyGrid
                         povertyData={context.state.povertyData}
-                        onPovertySelected={(poverty: object)=>this.onPovertySelected(poverty)}
+                        onPovertySelected={(poverty: PovertyType)=>this.onPovertySelected(poverty)}
                     />
                 }
 
