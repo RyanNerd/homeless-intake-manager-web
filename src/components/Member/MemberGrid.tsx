@@ -9,7 +9,7 @@ import {MemberType} from "../../models/MemberModel";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface MemberGridProps {
+interface Props {
     onMemberSelected: Function
     members: MemberType[]
 }
@@ -26,7 +26,7 @@ type State = Readonly<typeof initialState>
 /**
  * MemberGrid class
  */
-export class MemberGrid extends Component<MemberGridProps, State>
+export class MemberGrid extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -35,7 +35,7 @@ export class MemberGrid extends Component<MemberGridProps, State>
      *
      * @param {object} prevProps
      */
-    componentDidUpdate(prevProps: MemberGridProps)
+    componentDidUpdate(prevProps: Props)
     {
         // Is this the initial assignment of member data?
         if (this.state.members === null && this.props.members) {
@@ -59,7 +59,7 @@ export class MemberGrid extends Component<MemberGridProps, State>
     /**
      * Handle when a member is selected from the member grid
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      * @param {int} id
      */
     handleMemberSelected(e: MouseEvent<Button>, id: number)
@@ -72,7 +72,7 @@ export class MemberGrid extends Component<MemberGridProps, State>
     /**
      * Handle when user has clicked on a header to sort by that header
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      * @param {string} columnName Name of the column in the array to sort by.
      */
     handleSortBy(e: MouseEvent<HTMLTableHeaderCellElement>, columnName: string)
@@ -177,7 +177,7 @@ export class MemberGrid extends Component<MemberGridProps, State>
                                 (<span>DOB</span>)
                             }
                         </th>
-                    </tr>
+                    </tr>MemberEditProps
                 </thead>
                 <tbody>
                     {this.state.members.map(MemberRow)}
