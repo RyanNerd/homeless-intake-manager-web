@@ -23,7 +23,7 @@ import {
 } from "../../utils/utilities";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface IntakePageProps {
+interface Props {
     intakeProvider: IntakeProvider
     context: ContextType
 }
@@ -60,7 +60,7 @@ export const IntakePage = (props?: any) => (
  * IntakePage Class
  *
  */
-class IntakePageBase extends Component<IntakePageProps, State>
+class IntakePageBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -93,6 +93,8 @@ class IntakePageBase extends Component<IntakePageProps, State>
     populateIntakeGrid()
     {
         const householdId = this.props.context.state.currentMember.HouseholdId;
+
+        // Do we have an existing household?
         if (householdId) {
             // Get the intake history for the household
             this.props.intakeProvider.read(householdId, 'HouseholdId', false)
@@ -142,7 +144,7 @@ class IntakePageBase extends Component<IntakePageProps, State>
     /**
      * Language toggle handler
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleLanguageChange(e: MouseEvent<Button>)
     {
@@ -161,7 +163,7 @@ class IntakePageBase extends Component<IntakePageProps, State>
     /**
      * Callback when an intake is selected from the grid.
      *
-     * @param {object} intakeInfo
+     * @param {IntakeType} intakeInfo
      */
     onIntakeSelected(intakeInfo: IntakeType)
     {
@@ -172,7 +174,7 @@ class IntakePageBase extends Component<IntakePageProps, State>
     /**
      * Handle when New Intake button clicked
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleAddIntake(e: MouseEvent<Button>)
     {
@@ -233,7 +235,7 @@ class IntakePageBase extends Component<IntakePageProps, State>
      *
      * @return {int | null}
      */
-    intakeDays()
+    intakeDays(): number | null
     {
         const today = dateToString(new Date());
 
