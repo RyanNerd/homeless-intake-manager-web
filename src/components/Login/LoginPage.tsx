@@ -17,7 +17,7 @@ import {hasWhitespace} from "../../utils/validation";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface LoginPageProps {
+interface Props {
     onSignedIn: Function
     context: ContextType
 }
@@ -50,7 +50,7 @@ export const LoginPage = (props?: any) => (
 /**
  * LoginPage Class
  */
-class LoginPageBase extends Component<LoginPageProps, State>
+class LoginPageBase extends Component<Props, State>
 {
     readonly state: State = initialState;
 
@@ -68,9 +68,12 @@ class LoginPageBase extends Component<LoginPageProps, State>
      */
     componentDidUpdate()
     {
+        // Are we resetting the password?
         if (this.state.passwordReset) {
+            // Is the new password unpopulated?
             if (this.state.newPassword.length === 0) {
                 let newPassword = document.getElementById('new-password');
+                // Sanity check - set focus to new password field
                 if (newPassword) {
                     newPassword.focus();
                 }
@@ -91,7 +94,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Fires when user has successfully signed into the system
      *
-     * @param {object} userInfo
+     * @param {UserType} userInfo
      */
     handleSignedIn(userInfo: UserType)
     {
@@ -105,7 +108,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Handle when user clicks the login button
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleLoginClick(e: MouseEvent<Button>)
     {
@@ -141,7 +144,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Handle changes to the email field.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleEmailChange(e: FormEvent<FormControl>)
     {
@@ -152,7 +155,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Handle changes to the password field.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handlePasswordChange(e: FormEvent<FormControl>)
     {
@@ -163,7 +166,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Capture keyUp event for password field
      *
-     * @param {Event} e
+     * @param {KeyboardEvent} e
      */
     handlePasswordKeyUp(e: KeyboardEvent<FormControl>)
     {
@@ -178,7 +181,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Handle when user clicked on the Password Reset button
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handlePasswordReset(e: MouseEvent<Button>)
     {
@@ -210,7 +213,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Handle changes to the newPassword field
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleNewPasswordChange(e: FormEvent<FormControl>)
     {
@@ -224,7 +227,7 @@ class LoginPageBase extends Component<LoginPageProps, State>
     /**
      * Capture keyUp event on the newPassword field
      *
-     * @param {Event} e
+     * @param {KeyboardEvent} e
      */
     handleNewPasswordKeyUp(e: KeyboardEvent<FormControl>)
     {
