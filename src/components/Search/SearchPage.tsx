@@ -74,9 +74,9 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Default initial state
      *
-     * @returns {object} state object initial hash key and values
+     * @returns {State} state object initial hash key and values
      */
-    defaultState()
+    defaultState(): State
     {
         // Set the Store currentMember and currentHousehold back to default.
         const methods = this.props.context.methods;
@@ -123,7 +123,7 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Handle when the value changes for the badge text input element
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleBadgeChange(e: MouseEvent<Button>)
     {
@@ -167,7 +167,7 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Handle when the value changes for the name text input element
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleNameChange(e: FormEvent<FormControl>)
     {
@@ -179,8 +179,7 @@ class SearchPageBase extends Component<Props, State>
         // We only kick off a search if the entered last name is 2 or more characters.
         if (nameInput.length > 1) {
             // Perform the search based on the entered last name using a Soft Search
-
-              this.props.memberProvider.read(nameInput, 'last_name', true)
+            this.props.memberProvider.read(nameInput, 'last_name', true)
             .then((response) =>
             {
                 // Did we find any member(s)?
@@ -203,7 +202,7 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Fires when a member is selected from the MemberGrid
      *
-     * @param memberId
+     * @param {int} memberId
      */
     onMemberSelected(memberId: number)
     {
@@ -250,19 +249,18 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Fires when the Edit Member button is clicked and displays the MemberEdit modal.
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
     handleMemberEdit(e: MouseEvent<Button>)
     {
         e.preventDefault();
-
         this.setState({showMemberEdit: true});
     }
 
     /**
      * Fires when the MemberEdit modal closes (either by a save or cancel)
      *
-     * @param {object} memberInfo
+     * @param {MemberType} memberInfo
      */
     handleMemberEditClose(memberInfo: MemberType)
     {
