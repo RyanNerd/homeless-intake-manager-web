@@ -1,5 +1,5 @@
 import * as React from "react";
-import {ChangeEvent, Component, createRef, CSSProperties} from "react";
+import {ChangeEvent, MouseEvent, Component, createRef, CSSProperties} from "react";
 import {
         imageFileToDataURL,
         UUID
@@ -39,9 +39,9 @@ export class ImageDrop extends Component<Props, State>
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @param {object} prevState
-     * @return {object | null}
+     * @param {Props} nextProps
+     * @param {State} prevState
+     * @return {State | null}
      */
     static getDerivedStateFromProps(nextProps: Props, prevState: State)
     {
@@ -71,9 +71,9 @@ export class ImageDrop extends Component<Props, State>
      * Image clicked
      * Programmatically click the hidden <input type="file"> element which in turn fires the handleFileChange() event.
      *
-     * @param {Event} e
+     * @param {MouseEvent} e
      */
-    handleImageClick(e: React.MouseEvent<HTMLImageElement>)
+    handleImageClick(e: MouseEvent<HTMLImageElement>)
     {
         e.preventDefault();
 
@@ -135,9 +135,9 @@ export class ImageDrop extends Component<Props, State>
      * Click events are "bleeding through" so that even if the <img> element was not clicked the open file dialog is
      * opening. We keep a flag now so that ONLY if a click on the <img> will open the file dialog.
      *
-     * @param e
+     * @param {MouseEvent} e
      */
-    shouldFileDialogOpen(e: React.MouseEvent<HTMLInputElement>)
+    shouldFileDialogOpen(e: MouseEvent<HTMLInputElement>)
     {
         if (!this.imgClicked) {
             e.preventDefault();

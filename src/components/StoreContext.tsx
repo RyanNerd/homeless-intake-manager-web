@@ -13,6 +13,7 @@ export interface StoreProviderProps {
 interface StoreConsumerProps {
     children: any;
 }
+
 export type ContextMethods = {
     resetSearch: Function
     setCurrentUser: Function
@@ -125,7 +126,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
 
         // Is there any middleware to process?
         if (middleware.length > 0) {
-            // Last In First Executed
+            // Last In First Executed - LIFE
             middleware.reverse();
 
             // Process middleware callbacks
@@ -194,7 +195,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
      *
      * @public
      */
-    public resetSearch(): void
+    public resetSearch()
     {
         this._statechange('currentMember', null);
         this._statechange('currentMemberPhoto', null);
@@ -213,6 +214,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
 
                     /**
                      * Convention is setStateVarible: (newValue)=>this._statechange('stateVariable', newValue)
+                     * resetSearch() is a convience method.
                      */
                     methods:
                     {

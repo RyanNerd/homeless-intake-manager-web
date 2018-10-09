@@ -65,7 +65,7 @@ class UserPageBase extends Component<Props, State>
      * Fires when a user is selected.
      * Bring up UserEdit modal.
      *
-     * @param {object} user
+     * @param {UserType} user
      */
     onUserSelected(user: UserType)
     {
@@ -78,7 +78,7 @@ class UserPageBase extends Component<Props, State>
      * Fires when the Add New User button is clicked.
      * Bring up UserEdit modal
      *
-     * @param e
+     * @param {MouseEvent} e
      */
     addUser(e: MouseEvent<Button>)
     {

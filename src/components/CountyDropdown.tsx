@@ -45,9 +45,9 @@ class CountyDropdownBase extends Component<Props, State>
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @param {object} prevState
-     * @return {object | null}
+     * @param {Props} nextProps
+     * @param {State} prevState
+     * @return {State | null}
      */
     static getDerivedStateFromProps(nextProps: Props, prevState: State): State | null
     {
@@ -61,8 +61,8 @@ class CountyDropdownBase extends Component<Props, State>
     /**
      * Lifecycle hook - componentDidUpdate
      *
-     * @param {object} prevProps
-     * @param {object} prevState
+     * @param {Props prevProps
+     * @param {State} prevState
      */
     componentDidUpdate(prevProps: Props, prevState: State)
     {
@@ -98,6 +98,10 @@ class CountyDropdownBase extends Component<Props, State>
         methods.setError(error);
     }
 
+    /**
+     * Fires when the user selects a county
+     * @param {ChangeEvent} e
+     */
     handleCountySelected(e: ChangeEvent<HTMLSelectElement>)
     {
         const target = e.target;

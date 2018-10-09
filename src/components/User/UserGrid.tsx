@@ -32,13 +32,12 @@ class UserGridBase extends Component<Props, {}>
     /**
      * Handle when a user is selected from the grid
      *
-     * @param {Event} e
-     * @param {object} user
+     * @param {MouseEvent} e
+     * @param {UserType} user
      */
     handleUserSelected(e: MouseEvent<Button>, user: UserType)
     {
         e.preventDefault();
-
         this.props.onUserSelected(user);
     }
 

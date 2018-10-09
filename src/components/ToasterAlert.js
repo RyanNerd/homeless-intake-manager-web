@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Alert} from 'react-bootstrap';
 import PropTypes from "prop-types";
 
+// TODO: Convert this to TypeScript
 export class ToasterAlert extends Component
 {
     static propTypes = {

@@ -62,10 +62,11 @@ class LandingPageBase extends Component<Props, {}>
 
     /**
      * Handle tab changed event
+     * @param {SyntheticEvent} key
      *
      * @see https://react-bootstrap.github.io/components/tabs/#tabs-props
      */
-    handleSelect(key: SyntheticEvent<TabContainer>): void
+    handleSelect(key: SyntheticEvent<TabContainer>)
     {
         this.setState({key: key});
     }

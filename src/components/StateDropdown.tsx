@@ -23,9 +23,9 @@ export class StateDropdown extends Component<Props, State>
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @param {object} prevState
-     * @return {object | null}
+     * @param {Props} nextProps
+     * @param {State} prevState
+     * @return {State | null}
      */
     static getDerivedStateFromProps(nextProps: Props, prevState: State): State | null
     {
@@ -39,7 +39,7 @@ export class StateDropdown extends Component<Props, State>
     /**
      * Handle when a state is selected
      *
-     * @param {Event} e
+     * @param {ChangeEvent} e
      */
     handleStateSelected(e: ChangeEvent<HTMLSelectElement>)
     {

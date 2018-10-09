@@ -47,9 +47,10 @@ class ErrorAlertBase extends Component<Props, State>
     readonly state: State = initialState;
 
     /**
-     * Lifecycle hook
-     * @param {object} nextProps
-     * @return {object | null}
+     * Lifecycle hook - getDerivedStateFromProps
+     * @param {Props} nextProps
+     * @return {State | null}
+     * @todo Add return type - thows TypeScript errors if we use State | null
      */
     static getDerivedStateFromProps(nextProps: Props)
     {
@@ -60,10 +61,10 @@ class ErrorAlertBase extends Component<Props, State>
     }
 
     /**
-     * Lifecycle hook
+     * Lifecycle hook - componentDidUpdate
      *
-     * @param {object} prevProps
-     * @param {object} prevState
+     * @param {Props} prevProps
+     * @param {State} prevState
      */
     componentDidUpdate(prevProps: Props, prevState: State)
     {
@@ -73,7 +74,7 @@ class ErrorAlertBase extends Component<Props, State>
     }
 
     /**
-     * componentDidCatch
+     * componentDidCatch - React error hook override
      *
      * @param {object | string} error
      * @param {string} info

@@ -71,8 +71,8 @@ class UserEditBase extends Component<Props, State>
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @return {object | null}
+     * @param {Props} nextProps
+     * @return {State | null}
      */
     static getDerivedStateFromProps(nextProps: Props)
     {
@@ -96,8 +96,8 @@ class UserEditBase extends Component<Props, State>
     /**
      * Fires when the modal is closing either from cancel or save)
      *
-     * @param {Event} e
-     * @param {bool} shouldSave
+     * @param {MouseEvent} e
+     * @param {boolean} shouldSave
      */
     handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
@@ -151,7 +151,7 @@ class UserEditBase extends Component<Props, State>
     /**
      * Fires when a text field or checkbox is changing.
      *
-     * @param {Event} e
+     * @param {FormEvent} e
      */
     handleOnChange(e: FormEvent<FormControl>)
     {
