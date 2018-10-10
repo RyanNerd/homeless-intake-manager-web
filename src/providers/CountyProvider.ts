@@ -10,7 +10,7 @@ const BASE_URI = process.env.API_PATH;
 interface CountyResponse extends Response {
     success: boolean;
     status: number;
-    data: CountyType;
+    data: CountyType[];
 }
 
 /**
