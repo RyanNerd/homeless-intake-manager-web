@@ -7,6 +7,12 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
+interface UserResponse extends Response {
+    success: boolean;
+    status: number;
+    data: UserType[];
+}
+
 /**
  * UserProvider Class
  */
@@ -30,7 +36,7 @@ export class UserProvider
      * @param {object} userData
      * @return {Promise<Response>}
      */
-    create(userData: UserType)
+    create(userData: UserType): Promise<UserResponse>
     {
         let uri = BASE_URI + 'users';
 
@@ -53,7 +59,7 @@ export class UserProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val?: string | number, byField?: string, isSoftSearch: boolean = false)
+    read(val?: string | number, byField?: string, isSoftSearch: boolean = false): Promise<UserResponse>
     {
         let uri = BASE_URI;
         let authKey = this.authKey;
@@ -99,7 +105,7 @@ export class UserProvider
      * @param {object} userData
      * @return {Promise<Response>}
      */
-    update(userData: UserType)
+    update(userData: UserType): Promise<UserResponse>
     {
         let uri = BASE_URI + 'users';
 

@@ -7,10 +7,11 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-type IntakeResponse = {
+interface IntakeResponse extends Response {
     success: boolean;
     status: number;
     data: IntakeType[];
+
 }
 
 /**
@@ -36,7 +37,7 @@ export class IntakeProvider
      * @param {object} intakeData
      * @return {Promise<Response>}
      */
-    create(intakeData: IntakeType)
+    create(intakeData: IntakeType): Promise<IntakeResponse>
     {
         let uri = BASE_URI + 'intakes';
 

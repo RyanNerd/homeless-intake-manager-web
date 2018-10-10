@@ -9,11 +9,13 @@ const BASE_URI = process.env.API_PATH as string;
 
 interface HouseholdResponse extends Response {
     success: boolean;
+    status: number;
     data: HouseholdType;
 }
 
 interface MemberCountResponse extends Response {
     success: boolean;
+    status: number;
     data: {Count: number}
 }
 
@@ -40,7 +42,7 @@ export class HouseholdProvider
      * @param {object} householdData
      * @return {Promise<Response>}
      */
-    create(householdData: HouseholdType)
+    create(householdData: HouseholdType): Promise<HouseholdResponse>
     {
         let uri = BASE_URI + 'households';
         uri += '?auth_key=' + this.authKey;

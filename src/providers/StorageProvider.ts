@@ -1,16 +1,17 @@
 import Frak from "./Frak";
 import {StorageType} from "../models/StorageModel";
 
-type StorageResponse = {
-    success: boolean;
-    data: StorageType;
-}
-
 // Frak is a wrapper around fetch() specifically for handling JSON API payloads.
 const frak = new Frak(false);
 
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
+
+interface StorageResponse extends Response {
+    success: boolean;
+    status: number;
+    data: StorageType;
+}
 
 /**
  * StorageProvider Class
@@ -57,7 +58,7 @@ export class StorageProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val: string | number, byField?: string, isSoftSearch: boolean = false)
+    read(val: string | number, byField?: string, isSoftSearch: boolean = false): Promise<StorageResponse>
     {
         let uri = BASE_URI;
 
@@ -99,7 +100,7 @@ export class StorageProvider
      * @param {object} storageData
      * @return {Promise<Response>}
      */
-    update(storageData: StorageType)
+    update(storageData: StorageType): Promise<StorageResponse>
     {
         let uri = BASE_URI + 'storage' + '?auth_key=' + this.authKey;
 

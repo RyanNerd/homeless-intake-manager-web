@@ -123,7 +123,6 @@ export function imageFileToDataURL(imageFile: File): Promise<string>
     });
 }
 
-
 /**
  * Return the mime type of a DataURL string.
  *

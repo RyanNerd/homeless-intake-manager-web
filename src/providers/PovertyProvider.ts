@@ -1,9 +1,10 @@
 import Frak from "./Frak";
 import {PovertyType} from "../models/PovertyModel";
 
-type PovertyResponse = {
+interface PovertyResponse extends Response {
     success: boolean;
-    data: object;
+    status: number;
+    data: PovertyType[];
 }
 
 // Frak is a wrapper around fetch() specifically for handling JSON API payloads.
@@ -36,7 +37,7 @@ export class PovertyProvider
      * @param {object} povertyData
      * @return {Promise<Response>}
      */
-    create(povertyData: object)
+    create(povertyData: PovertyType)
     {
         let uri = BASE_URI + 'poverty';
         uri += '?auth_key=' + this.authKey;

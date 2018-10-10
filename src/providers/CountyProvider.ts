@@ -1,10 +1,17 @@
 import Frak from "./Frak";
+import {CountyType} from "../models/CountyModel";
 
 // Frak is a wrapper around fetch() specifically for handling JSON API payloads.
 const frak = new Frak(false);
 
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH;
+
+interface CountyResponse extends Response {
+    success: boolean;
+    status: number;
+    data: CountyType;
+}
 
 /**
  * County Provider Class
@@ -30,7 +37,7 @@ export class CountyProvider
      * @param {string} val
      * @return {Promise<Response>}
      */
-    read(val: string = null)
+    read(val: string = null): Promise<CountyResponse>
     {
         let uri = BASE_URI;
 

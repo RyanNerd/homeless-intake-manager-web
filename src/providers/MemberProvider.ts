@@ -7,7 +7,7 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-type MemberResponse = {
+interface MemberResponse extends Response {
     success: boolean;
     status: number;
     data: MemberType[];
@@ -36,7 +36,7 @@ export class MemberProvider
      * @param {object} memberData
      * @return {Promise<Response>}
      */
-    create(memberData: MemberType)
+    create(memberData: MemberType): Promise<MemberResponse>
     {
         let uri = BASE_URI + 'members';
         uri += '?auth_key=' + this.authKey;
