@@ -11,7 +11,6 @@ interface IntakeResponse extends Response {
     success: boolean;
     status: number;
     data: IntakeType[];
-
 }
 
 /**
