@@ -177,7 +177,7 @@ export class MemberGrid extends Component<Props, State>
                                 (<span>DOB</span>)
                             }
                         </th>
-                    </tr>MemberEditProps
+                    </tr>
                 </thead>
                 <tbody>
                     {this.state.members.map(MemberRow)}
