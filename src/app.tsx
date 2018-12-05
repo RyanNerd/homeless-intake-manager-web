@@ -27,7 +27,7 @@ Number.prototype.pad = function(size: number): string
 
 // Determine browser via duck type hunting.
 // Note: IE stupidity is handled in index.html
-let isChrome = (!!(window as any).chrome && !!(window as any).chrome.webstore) as boolean;
+let isChrome = (!!(window as any).chrome) as boolean;
 
 /*
   let isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
