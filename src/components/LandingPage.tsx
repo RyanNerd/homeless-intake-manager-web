@@ -146,6 +146,13 @@ class LandingPageBase extends Component<Props, {}>
                                         </NavItem>
 
                                         <NavItem
+                                            eventKey="credit"
+                                            disabled={!context.state.currentMember}
+                                        >
+                                            Credits
+                                        </NavItem>
+
+                                        <NavItem
                                             eventKey="reports"
                                             disabled={!context.state.currentUser.IsAdmin}
                                         >
@@ -171,6 +178,10 @@ class LandingPageBase extends Component<Props, {}>
                                             {context.state.currentMember &&
                                                 <IntakePage/>
                                             }
+                                        </Tab.Pane>
+
+                                        <Tab.Pane eventKey="credit">
+                                            <p>Credits Placeholder</p>
                                         </Tab.Pane>
 
                                         <Tab.Pane eventKey="household">
