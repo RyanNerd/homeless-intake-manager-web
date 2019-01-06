@@ -3,17 +3,15 @@ import {Component} from "react";
 import {Alert} from 'react-bootstrap';
 import {ContextType, StoreConsumer} from "./StoreContext";
 
-/*
-    eslint-disable
-*/
+/* tslint:disable: no-console */
 
 interface IHeaders extends Headers {
-    keys(): string
+    keys(): string;
 }
 
-interface Props {
-    context?: ContextType
-    children?: any
+interface IProps {
+    context?: ContextType;
+    children?: any;
 }
 
 const objectStringOrNull: object | string | null = null;
@@ -25,7 +23,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const ErrorAlert = (props: Props) => (
+export const ErrorAlert = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <ErrorAlertBase
@@ -42,9 +40,9 @@ export const ErrorAlert = (props: Props) => (
  * ErrorBoundary details:
  * @link https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
  */
-class ErrorAlertBase extends Component<Props, State>
+class ErrorAlertBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
@@ -52,10 +50,10 @@ class ErrorAlertBase extends Component<Props, State>
      * @return {State | null}
      * @todo Add return type - thows TypeScript errors if we use State | null
      */
-    static getDerivedStateFromProps(nextProps: Props)
+    public static getDerivedStateFromProps(nextProps: IProps)
     {
         if (nextProps.context.state.error) {
-            return {errorDetails: nextProps.context.state.error}
+            return {errorDetails: nextProps.context.state.error};
         }
         return null;
     }
@@ -63,13 +61,13 @@ class ErrorAlertBase extends Component<Props, State>
     /**
      * Lifecycle hook - componentDidUpdate
      *
-     * @param {Props} prevProps
+     * @param {IProps} prevProps
      * @param {State} prevState
      */
-    componentDidUpdate(prevProps: Props, prevState: State)
+    public componentDidUpdate(prevProps: IProps, prevState: State)
     {
         if (prevState.errorDetails === null && this.state.errorDetails) {
-            this.componentDidCatch(this.state.errorDetails, 'onError')
+            this.componentDidCatch(this.state.errorDetails, 'onError');
         }
     }
 
@@ -79,7 +77,7 @@ class ErrorAlertBase extends Component<Props, State>
      * @param {object | string} error
      * @param {string} info
      */
-    componentDidCatch(error: any, info: any)
+    public componentDidCatch(error: any, info: any)
     {
         console.log('error', error);
         console.log('catchInfo', info);
@@ -92,18 +90,18 @@ class ErrorAlertBase extends Component<Props, State>
      * @param {any} error
      * @return {string}
      */
-    getErrorDetails(error: any)
+    private getErrorDetails(error: any)
     {
         let logVomit;
 
         if (typeof error === 'object') {
-            logVomit = {...error}
+            logVomit = {...error};
         } else {
             logVomit = {error: error};
         }
 
         // The body property is a stream so we use async...await to deserialize the stream into a string
-        let self = this;
+        const self = this;
         async function getBody(err: Response)
         {
             let body = null;
@@ -118,9 +116,9 @@ class ErrorAlertBase extends Component<Props, State>
 
         // If the "error" is a Response object then serialize the response and body to strings.
         if (typeof error === 'object' && error instanceof Response && typeof error.headers !== 'undefined') {
-            let headers = error.headers as IHeaders;
-            let keyPair = {};
-            for(const key of headers.keys()) {
+            const headers = error.headers as IHeaders;
+            const keyPair = {};
+            for (const key of headers.keys()) {
                 keyPair[key] = headers.get(key);
             }
 
@@ -133,16 +131,20 @@ class ErrorAlertBase extends Component<Props, State>
                 type: error.type,
                 url: error.url
             };
-            getBody(error);
+            const p = getBody(error);
 
-            return JSON.stringify(logVomit, null, '\t');
+            if (p) {
+                return JSON.stringify(logVomit, null, '\t');
+            } else {
+                return JSON.stringify(logVomit, null, '\t');
+            }
         }
 
         // Deserialize the error object to a JSON string.
         return JSON.stringify(error, null, '\t');
     }
 
-    render()
+    public render()
     {
         if (!this.state.errorDetails) {
             return this.props.children;

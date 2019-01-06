@@ -10,15 +10,15 @@ const BASE_URI = process.env.API_PATH as string;
 type UserCredentialsType = {
     Email: string,
     Password: string
-}
+};
 
 type UserPasswordResetType = {
     Email: string,
     Password: string,
     NewPassword: string
-}
+};
 
-interface UserResponse extends Response {
+interface IUserResponse extends Response {
     success: boolean;
     status: number;
     data: UserType[];
@@ -47,9 +47,9 @@ export class UserProvider
      * @param {object} userData
      * @return {Promise<Response>}
      */
-    create(userData: UserType): Promise<UserResponse>
+    public create(userData: UserType): Promise<IUserResponse>
     {
-        let uri = BASE_URI + 'users';
+        const uri = BASE_URI + 'users';
 
         return frak.post(uri, userData)
         .then((response) =>
@@ -70,10 +70,10 @@ export class UserProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val?: string | number, byField?: string, isSoftSearch: boolean = false): Promise<UserResponse>
+    public read(val?: string | number, byField?: string, isSoftSearch: boolean = false): Promise<IUserResponse>
     {
         let uri = BASE_URI;
-        let authKey = this.authKey;
+        const authKey = this.authKey;
 
         // Is the search by field name?
         if (byField) {
@@ -116,9 +116,9 @@ export class UserProvider
      * @param {object} userData
      * @return {Promise<Response>}
      */
-    update(userData: UserType): Promise<UserResponse>
+    public update(userData: UserType): Promise<IUserResponse>
     {
-        let uri = BASE_URI + 'users';
+        const uri = BASE_URI + 'users';
 
         return frak.patch(uri, userData)
         .then((response) =>
@@ -138,9 +138,9 @@ export class UserProvider
      * @param {object} credentials
      * @return {Promise<Response>}
      */
-    authenticate(credentials: UserCredentialsType)
+    public authenticate(credentials: UserCredentialsType)
     {
-        let uri = BASE_URI + 'users/authenticate';
+        const uri = BASE_URI + 'users/authenticate';
         return frak.post(uri, credentials)
         .then((response) =>
         {
@@ -159,17 +159,17 @@ export class UserProvider
      * @param {object} credentials
      * @return {Promise<Response>}
      */
-    resetPassword(credentials: UserPasswordResetType)
+    public resetPassword(credentials: UserPasswordResetType)
     {
-        let uri = BASE_URI + 'users/password-reset';
+        const uri = BASE_URI + 'users/password-reset';
         return frak.post(uri, credentials)
-        .then((response)=>
+        .then((response) =>
         {
             return response;
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             return error;
-        })
+        });
     }
 }

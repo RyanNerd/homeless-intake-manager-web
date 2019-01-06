@@ -237,4 +237,4 @@ export const statesModel = [
     }
 ];
 
-export type StatesType = Readonly<typeof statesModel>
+export type StatesType = Readonly<typeof statesModel>;

@@ -5,13 +5,13 @@ import {CountyProvider} from "../providers/CountyProvider";
 import {CountyType} from "../models/CountyModel";
 import {ChangeEvent} from "react";
 
-interface Props {
-    selectedCounty: string
-    countyProvider?: CountyProvider
-    className: string
-    stateCode: string
-    onSelected: Function
-    context?: ContextType
+interface IProps {
+    selectedCounty: string;
+    countyProvider?: CountyProvider;
+    className: string;
+    stateCode: string;
+    onSelected: (selected: string) => void;
+    context?: ContextType;
 }
 
 const stringOrNull: string | null = null;
@@ -23,7 +23,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const CountyDropdown = (props: Props) => (
+export const CountyDropdown = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <CountyDropdownBase
@@ -38,21 +38,21 @@ export const CountyDropdown = (props: Props) => (
 /**
  * CountyDropdown Class
  */
-class CountyDropdownBase extends Component<Props, State>
+class CountyDropdownBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {Props} nextProps
+     * @param {IProps} nextProps
      * @param {State} prevState
      * @return {State | null}
      */
-    static getDerivedStateFromProps(nextProps: Props, prevState: State): State | null
+    public static getDerivedStateFromProps(nextProps: IProps, prevState: State): State | null
     {
         if (nextProps.stateCode !== prevState.stateCode) {
-            return {stateCode: nextProps.stateCode, counties: null, selectedCounty: null}
+            return {stateCode: nextProps.stateCode, counties: null, selectedCounty: null};
         }
 
         return null;
@@ -61,22 +61,22 @@ class CountyDropdownBase extends Component<Props, State>
     /**
      * Lifecycle hook - componentDidUpdate
      *
-     * @param {Props prevProps
+     * @param {IProps} prevProps
      * @param {State} prevState
      */
-    componentDidUpdate(prevProps: Props, prevState: State)
+    public componentDidUpdate(prevProps: IProps, prevState: State)
     {
         if (this.props.stateCode && this.state.counties === null) {
             this.props.countyProvider.read(this.props.stateCode)
-            .then((response)=>
+            .then((response) =>
             {
                 if (response.success) {
-                    this.setState({counties: response.data, stateCode: this.props.stateCode})
+                    this.setState({counties: response.data, stateCode: this.props.stateCode});
                 } else {
                     this.onError(response);
                 }
             })
-            .catch((error)=>
+            .catch((error) =>
             {
                 this.onError(error);
             });
@@ -92,7 +92,7 @@ class CountyDropdownBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         const methods = this.props.context.methods;
         methods.setError(error);
@@ -102,15 +102,15 @@ class CountyDropdownBase extends Component<Props, State>
      * Fires when the user selects a county
      * @param {ChangeEvent} e
      */
-    handleCountySelected(e: ChangeEvent<HTMLSelectElement>)
+    private handleCountySelected(e: ChangeEvent<HTMLSelectElement>)
     {
         const target = e.target;
-        let countyCode = target.value;
+        const countyCode = target.value;
         this.setState({selectedCounty: countyCode});
         this.props.onSelected(countyCode);
     }
 
-    render()
+    public render()
     {
         if (!this.state.counties) {
             return (false);
@@ -120,7 +120,7 @@ class CountyDropdownBase extends Component<Props, State>
             <select
                 className={this.props.className}
                 value={this.state.selectedCounty}
-                onChange={(e)=>this.handleCountySelected(e)}>
+                onChange={(e) => this.handleCountySelected(e)}>
                 {this.state.counties.map((county) => {
                     return (
                         <option
@@ -132,6 +132,6 @@ class CountyDropdownBase extends Component<Props, State>
                     );
                 })}
             </select>
-        )
+        );
     }
 }

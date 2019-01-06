@@ -7,7 +7,7 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-interface MemberResponse extends Response {
+interface IMemberResponse extends Response {
     success: boolean;
     status: number;
     data: MemberType[];
@@ -36,7 +36,7 @@ export class MemberProvider
      * @param {object} memberData
      * @return {Promise<Response>}
      */
-    create(memberData: MemberType): Promise<MemberResponse>
+    public create(memberData: MemberType): Promise<IMemberResponse>
     {
         let uri = BASE_URI + 'members';
         uri += '?auth_key=' + this.authKey;
@@ -60,10 +60,10 @@ export class MemberProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val: string | number, byField?: string, isSoftSearch: boolean = false): Promise<MemberResponse>
+    public read(val: string | number, byField?: string, isSoftSearch: boolean = false): Promise<IMemberResponse>
     {
         let uri = BASE_URI;
-        let authKey = this.authKey;
+        const authKey = this.authKey;
 
         // Is the search by field name?
         if (byField)
@@ -104,7 +104,7 @@ export class MemberProvider
      * @param {object} memberData
      * @return {Promise<Response>}
      */
-    update(memberData: MemberType): Promise<MemberResponse>
+    public update(memberData: MemberType): Promise<IMemberResponse>
     {
         let uri = BASE_URI + 'members';
         uri += '?auth_key=' + this.authKey;

@@ -17,13 +17,13 @@ import {PovertyType} from "../../models/PovertyModel";
 import {FormEvent} from "react";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface Props {
-    povertyProvider: PovertyProvider
-    povertyInfo: PovertyType
-    keyboard: boolean
-    context: ContextType
-    onHide: Function
-    show: boolean
+interface IProps {
+    povertyProvider: PovertyProvider;
+    povertyInfo: PovertyType;
+    keyboard: boolean;
+    context: ContextType;
+    onHide: (shouldHide: boolean) => void;
+    show: boolean;
 }
 
 const initialValidMonthlyAmount: null | 'error' = null;
@@ -33,7 +33,7 @@ const initialState = {
     povertyInfo: initialPovertyInfo,
     shouldShow: false
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 export const PovertyEdit = (props?: any) => (
     <StoreConsumer>
@@ -50,10 +50,10 @@ export const PovertyEdit = (props?: any) => (
 /**
  * PovertyEdit Class
  */
-class PovertyEditBase extends Component<Props, State>
+class PovertyEditBase extends Component<IProps, State>
 {
 
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
@@ -61,7 +61,7 @@ class PovertyEditBase extends Component<Props, State>
      * @param {object} nextProps
      * @return {object || null}
      */
-    static getDerivedStateFromProps(nextProps: Props)
+    public static getDerivedStateFromProps(nextProps: IProps)
     {
         if (nextProps.show) {
             return {povertyInfo: nextProps.povertyInfo, shouldShow: true};
@@ -75,7 +75,7 @@ class PovertyEditBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -86,7 +86,7 @@ class PovertyEditBase extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {boolean} shouldSave
      */
-    handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
+    private handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
         // Was the save button clicked to dismiss?
         if (shouldSave) {
@@ -101,7 +101,7 @@ class PovertyEditBase extends Component<Props, State>
             })
             .catch((error) =>
             {
-                this.onError(error)
+                this.onError(error);
             });
         } else {
             this.props.onHide(false);
@@ -113,9 +113,9 @@ class PovertyEditBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleOnChange(e: FormEvent<FormControl>)
+    private handleOnChange(e: FormEvent<FormControl>)
     {
-        let povertyInfo = this.state.povertyInfo as PovertyType;
+        const povertyInfo = this.state.povertyInfo as PovertyType;
 
         const target = e.target as ITarget;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -127,7 +127,7 @@ class PovertyEditBase extends Component<Props, State>
         });
     }
 
-    render()
+    public render()
     {
         const povertyInfo = this.state.povertyInfo;
 
@@ -140,7 +140,7 @@ class PovertyEditBase extends Component<Props, State>
             <Modal
                 bsSize="sm"
                 show={this.state.shouldShow}
-                onHide={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                onHide={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
                 keyboard={this.props.keyboard}
             >
                 <Modal.Header closeButton>
@@ -185,7 +185,7 @@ class PovertyEditBase extends Component<Props, State>
                                         maxLength={6}
                                         value={povertyInfo.Monthly}
                                         name="Monthly"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                             </FormGroup>
@@ -195,20 +195,20 @@ class PovertyEditBase extends Component<Props, State>
 
                 <Modal.Footer>
                     <Button
-                        onClick={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                        onClick={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
                     >
                         Cancel
                     </Button>
 
                     <Button
                         disabled={this.state.validMonthlyAmount === 'error' || !povertyInfo.Monthly}
-                        onClick={(e)=>this.handleModalDismiss(e, true)}
+                        onClick={(e) => this.handleModalDismiss(e, true)}
                         bsStyle="primary"
                     >
                         Save Changes
                     </Button>
                 </Modal.Footer>
             </Modal>
-        )
+        );
     }
 }

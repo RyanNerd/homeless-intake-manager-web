@@ -6,15 +6,15 @@ import {
 } from 'react-bootstrap';
 import {PovertyType} from "../../models/PovertyModel";
 
-interface Props {
-    onPovertySelected: Function
-    povertyData: PovertyType[]
+interface IProps {
+    onPovertySelected: (povertyInfo: PovertyType) => void;
+    povertyData: PovertyType[];
 }
 
 /**
  * PovertyGrid Class
  */
-export class PovertyGrid extends Component<Props, {}>
+export class PovertyGrid extends Component<IProps, {}>
 {
     /**
      * Handle when a poverty record is selected from the grid
@@ -22,19 +22,19 @@ export class PovertyGrid extends Component<Props, {}>
      * @param {Event} e
      * @param {object} povertyInfo
      */
-    handlePovertySelected(e: MouseEvent<Button>, povertyInfo: PovertyType)
+    private handlePovertySelected(e: MouseEvent<Button>, povertyInfo: PovertyType)
     {
         e.preventDefault();
 
         this.props.onPovertySelected(povertyInfo);
     }
 
-    render()
+    public render()
     {
         const PovertyRow = (poverty: PovertyType) =>
         {
-            let rowClassName="poverty-grid-row";
-            let buttonClassName="poverty-grid-button";
+            const rowClassName = "poverty-grid-row";
+            const buttonClassName = "poverty-grid-button";
 
             return (
                 <tr
@@ -46,7 +46,7 @@ export class PovertyGrid extends Component<Props, {}>
                         <Button
                             id={"poverty-grid-button-" + poverty.Id}
                             className={buttonClassName}
-                            onClick={(e: MouseEvent<Button>)=>{this.handlePovertySelected(e, poverty)}}
+                            onClick={(e: MouseEvent<Button>) => {this.handlePovertySelected(e, poverty); }}
                         >
                             Select
                         </Button>
@@ -54,7 +54,7 @@ export class PovertyGrid extends Component<Props, {}>
                     <td>{poverty.Id}</td>
                     <td>{poverty.Monthly}</td>
                 </tr>
-            )
+            );
         };
 
         return (

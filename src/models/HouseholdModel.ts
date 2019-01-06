@@ -31,4 +31,4 @@ export const householdModel =
         IsDemo: false
     };
 
-export type HouseholdType = Readonly<typeof householdModel>
+export type HouseholdType = Readonly<typeof householdModel>;

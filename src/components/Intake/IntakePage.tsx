@@ -23,9 +23,9 @@ import {
 } from "../../utils/utilities";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface Props {
-    intakeProvider: IntakeProvider
-    context: ContextType
+interface IProps {
+    intakeProvider: IntakeProvider;
+    context: ContextType;
 }
 
 const initialIntakeData: IntakeType[] = [];
@@ -60,14 +60,14 @@ export const IntakePage = (props?: any) => (
  * IntakePage Class
  *
  */
-class IntakePageBase extends Component<Props, State>
+class IntakePageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidUpdate
      */
-    componentDidUpdate()
+    public componentDidUpdate()
     {
         const context = this.props.context;
 
@@ -82,7 +82,7 @@ class IntakePageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -90,7 +90,7 @@ class IntakePageBase extends Component<Props, State>
     /**
      * Reload intakeData for the household from the database.
      */
-    populateIntakeGrid()
+    private populateIntakeGrid()
     {
         const householdId = this.props.context.state.currentMember.HouseholdId;
 
@@ -104,33 +104,40 @@ class IntakePageBase extends Component<Props, State>
                 if (response.success) {
                     return response.data;
                 } else {
-                    // If this is NOT a 404 error then something went wrong, otherwise it just means no pantry intake history
+                    // If this is NOT a 404 error then something went wrong, otherwise then no pantry intake history
                     if (response.status !== 404) {
                         this.onError(response);
                     }
                 }
                 return null;
             })
-            .then((data)=>
+            .then((data) =>
             {
                 // Is there any Intake data?
                 if (data) {
                     // Sort the Intake data array by latest intake date first.
-                    const intakeData = data.sort((a, b)=>
+                    const intakeData = data.sort((a, b) =>
                     {
-                        const intakeDate1 = parseInt(a.IntakeYear).pad(4) + parseInt(a.IntakeMonth).pad(2) + parseInt(a.IntakeDay).pad(2);
-                        const intakeDate2 = parseInt(b.IntakeYear).pad(4) + parseInt(b.IntakeMonth).pad(2) + parseInt(b.IntakeDay).pad(2);
+                        const intakeDate1 = parseInt(a.IntakeYear, 10).pad(4) +
+                                            parseInt(a.IntakeMonth, 10).pad(2) +
+                                            parseInt(a.IntakeDay, 10).pad(2);
+                        const intakeDate2 = parseInt(b.IntakeYear, 10).pad(4) +
+                                            parseInt(b.IntakeMonth, 10).pad(2) +
+                                            parseInt(b.IntakeDay, 10).pad(2);
                         if (intakeDate1 < intakeDate2) {
-                            return 1
+                            return 1;
                         }
                         return 0;
                     });
 
                     // Set the IntakeData to state.
-                    this.setState({intakeData: intakeData}, ()=>
+                    this.setState({intakeData: intakeData}, () =>
                     {
-                        // Now that IntakeData is in state we calculate intakeDays, and intakeForTodayExists and save this to state.
-                        this.setState({intakeForTodayExists: this.intakeForTodayExists(), intakeDays: this.intakeDays()});
+                        // Now that IntakeData is in state we calculate intakeDays, & intakeForTodayExists & save state.
+                        this.setState({
+                            intakeForTodayExists: this.intakeForTodayExists(),
+                            intakeDays: this.intakeDays()
+                        });
                     });
                 }
             })
@@ -146,7 +153,7 @@ class IntakePageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleLanguageChange(e: MouseEvent<Button>)
+    private handleLanguageChange(e: MouseEvent<Button>)
     {
         let language;
         const target = e.target as ITarget;
@@ -165,7 +172,7 @@ class IntakePageBase extends Component<Props, State>
      *
      * @param {IntakeType} intakeInfo
      */
-    onIntakeSelected(intakeInfo: IntakeType)
+    private onIntakeSelected(intakeInfo: IntakeType)
     {
         // Set intakeInfo and show the IntakeEdit modal
         this.setState({intakeInfo: {...intakeInfo}, showIntakeEdit: true});
@@ -176,13 +183,13 @@ class IntakePageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleAddIntake(e: MouseEvent<Button>)
+    private handleAddIntake(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
         const context = this.props.context;
 
-        let intakeInfo = {...intakeModel};
+        const intakeInfo = {...intakeModel};
         intakeInfo.MemberId = context.state.currentMember.Id;
         intakeInfo.HouseholdId = context.state.currentMember.HouseholdId;
         this.setState({intakeInfo: intakeInfo, showIntakeEdit: true});
@@ -193,7 +200,7 @@ class IntakePageBase extends Component<Props, State>
      *
      * @param {boolean} shouldRefresh True if the Intake Grid needs a refresh, false otherwise.
      */
-    handleIntakeEditClose(shouldRefresh: boolean)
+    private handleIntakeEditClose(shouldRefresh: boolean)
     {
         this.setState({showIntakeEdit: false, intakeInfo: null});
 
@@ -211,17 +218,17 @@ class IntakePageBase extends Component<Props, State>
      *
      * @return {boolean} True if there is an intake record for today, false otherwise.
      */
-    intakeForTodayExists(): boolean
+    private intakeForTodayExists(): boolean
     {
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth() + 1; // Really JavaScript this is zero based?
         const day = today.getDate(); // Really JavaScript this isn't zero based? Way to be inconsistent.
 
-        for(const intakeRecord of this.state.intakeData) {
-            if (year  === parseInt(intakeRecord.IntakeYear)  &&
-                month === parseInt(intakeRecord.IntakeMonth) &&
-                day   === parseInt(intakeRecord.IntakeDay)
+        for (const intakeRecord of this.state.intakeData) {
+            if (year  === parseInt(intakeRecord.IntakeYear, 10)  &&
+                month === parseInt(intakeRecord.IntakeMonth, 10) &&
+                day   === parseInt(intakeRecord.IntakeDay, 10)
             ) {
                 return true;
             }
@@ -235,13 +242,16 @@ class IntakePageBase extends Component<Props, State>
      *
      * @return {int | null}
      */
-    intakeDays(): number | null
+    private intakeDays(): number | null
     {
         const today = dateToString(new Date());
 
-        let days = [];
-        for(const intakeRecord of this.state.intakeData) {
-            days.push(dateDiffInDays(intakeRecord.IntakeYear + '-' + intakeRecord.IntakeMonth + '-' + intakeRecord.IntakeDay, today));
+        const days = [];
+        for (const intakeRecord of this.state.intakeData) {
+            days.push(dateDiffInDays(
+                    intakeRecord.IntakeYear + '-' + intakeRecord.IntakeMonth + '-' + intakeRecord.IntakeDay,
+                    today
+            ));
         }
 
         if (days.length > 0) {
@@ -251,13 +261,13 @@ class IntakePageBase extends Component<Props, State>
         }
     }
 
-    render()
+    public render()
     {
         const context = this.props.context;
         const member = context.state.currentMember;
-        const birthYear  = member.BirthYear  ? parseInt(member.BirthYear).pad(4) : '';
-        const birthMonth = member.BirthMonth ? parseInt(member.BirthMonth).pad(2) : '';
-        const birthDay   = member.BirthDay   ? parseInt(member.BirthDay).pad(2) : '';
+        const birthYear  = member.BirthYear  ? parseInt(member.BirthYear, 10).pad(4) : '';
+        const birthMonth = member.BirthMonth ? parseInt(member.BirthMonth, 10).pad(2) : '';
+        const birthDay   = member.BirthDay   ? parseInt(member.BirthDay, 10).pad(2) : '';
         const dob = birthYear + '-' + birthMonth + '-' + birthDay;
         const age = calculateAge(dob);
 
@@ -265,13 +275,23 @@ class IntakePageBase extends Component<Props, State>
             <div style={{marginLeft: "15px"}}>
                 {age < 18 &&
                     <Alert bsStyle={"warning"}>
-                        <b style={{color: "red"}}>WARNING: </b><b>Current member ({member.FirstName + ' ' + member.LastName}) is a minor.</b>
+                        <b style={{color: "red"}}>
+                            WARNING:
+                        </b>
+                        <b>
+                            Current member ({member.FirstName + ' ' + member.LastName}) is a minor.
+                        </b>
                     </Alert>
                 }
 
                 {!member.Active &&
                     <Alert bsStyle={"danger"}>
-                        <b style={{color: "red"}}>WARNING: </b><b>Current member ({member.FirstName + ' ' + member.LastName}) is not active.</b>
+                        <b style={{color: "red"}}>
+                            WARNING:
+                        </b>
+                        <b>
+                            Current member ({member.FirstName + ' ' + member.LastName}) is not active.
+                        </b>
                     </Alert>
                 }
 
@@ -288,14 +308,17 @@ class IntakePageBase extends Component<Props, State>
                             <p data-l10n-id="en-equal-opportunity">Equal Opportunity</p>
                         </div>
 
-
-                        <Checkbox onChange={(e: MouseEvent<Button>)=>{this.handleLanguageChange(e)}}>Show in spanish</Checkbox>
+                        <Checkbox
+                            onChange={(e: MouseEvent<Button>) => {this.handleLanguageChange(e); }}
+                        >
+                            Show in spanish
+                        </Checkbox>
 
                         <hr/>
 
                         <Button
                             disabled={this.state.intakeForTodayExists}
-                            onClick={(e: MouseEvent<Button>)=>{this.handleAddIntake(e)}}
+                            onClick={(e: MouseEvent<Button>) => {this.handleAddIntake(e); }}
                             bsStyle="primary"
                         >
                             New Intake
@@ -319,9 +342,13 @@ class IntakePageBase extends Component<Props, State>
                         Number of Days Since Last Use:
                         {this.state.intakeDays && (this.state.intakeDays > 0 && this.state.intakeDays < 8) ?
                             (
-                                <span style={{fontWeight: "bold", color: "red", paddingLeft: "5px"}}>{this.state.intakeDays}</span>
+                                <span style={{fontWeight: "bold", color: "red", paddingLeft: "5px"}}>
+                                    {this.state.intakeDays}
+                                </span>
                             ) : (
-                                <span style={{fontWeight: "bold", paddingLeft: "5px"}}>{this.state.intakeDays}</span>
+                                <span style={{fontWeight: "bold", paddingLeft: "5px"}}>
+                                    {this.state.intakeDays}
+                                </span>
                             )
                         }
                     </h4>
@@ -336,7 +363,7 @@ class IntakePageBase extends Component<Props, State>
                 {/* IntakeEdit Modal */}
                 <IntakeEdit
                     show={this.state.showIntakeEdit}
-                    onHide={(shouldRefresh: boolean)=>this.handleIntakeEditClose(shouldRefresh)}
+                    onHide={(shouldRefresh: boolean) => this.handleIntakeEditClose(shouldRefresh)}
                     keyboard={true}
                     language={this.state.language}
                     intakeInfo={this.state.intakeInfo}

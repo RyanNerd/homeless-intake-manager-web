@@ -6,14 +6,15 @@ import {PovertyType} from "../models/PovertyModel";
 import {UserType} from "../models/UserModel";
 import {householdModel, HouseholdType} from "../models/HouseholdModel";
 
-export interface StoreProviderProps {
+export interface IStoreProviderProps {
     children: any;
 }
 
-interface StoreConsumerProps {
+interface IStoreConsumerProps {
     children: any;
 }
 
+/* tslint:disable: ban-types */
 export type ContextMethods = {
     resetSearch: Function
     setCurrentUser: Function
@@ -23,7 +24,7 @@ export type ContextMethods = {
     setCurrentMemberPhoto: Function
     setError: Function
     setPovertyData: Function
-}
+};
 
 const userOrNull: UserType | null = null;
 const memberOrNull: MemberType | null = null;
@@ -48,12 +49,12 @@ export type ContextType = {
     state: State
     subscribe: Function
     addMiddleware: Function
-}
+};
 
 type CallbackObject = {
     propertyName: string;
     callBack: Function;
-}
+};
 
 /**
  * See https://rjzaworski.com/2018/05/react-context-with-typescript
@@ -63,9 +64,9 @@ const StoreContext = React.createContext('');
 /**
  * StoreConsumer Class
  */
-export const StoreConsumer = (props: StoreConsumerProps) => (
+export const StoreConsumer = (props: IStoreConsumerProps) => (
     <StoreContext.Consumer>
-        {context => props.children(context)}
+        {(context) => props.children(context)}
     </StoreContext.Consumer>
 );
 
@@ -79,9 +80,9 @@ export const StoreConsumer = (props: StoreConsumerProps) => (
  * xxxData    : An array of records (ex: povertyData)
  * currentXXX : Currently selected object (ex: currentMember)
  */
-export class StoreProvider extends Component<StoreProviderProps, State>
+export class StoreProvider extends Component<IStoreProviderProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Subscriber call back objects
@@ -106,7 +107,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
      * @param {string} propertyName
      * @param {any} value
      */
-    protected _statechange(propertyName: string, value: any): void
+    private _statechange(propertyName: string, value: any): void
     {
         if (this.state[propertyName] === value) {
             return;
@@ -115,8 +116,8 @@ export class StoreProvider extends Component<StoreProviderProps, State>
         const self = this;
 
         // Isolate any middleware processes for the given state propertyName
-        let middleware: CallbackObject[] = [];
-        this.middleware.forEach((obj: CallbackObject)=>
+        const middleware: CallbackObject[] = [];
+        this.middleware.forEach((obj: CallbackObject) =>
         {
             // Do we have any middleware for the given state propertyName?
             if (obj.propertyName === propertyName) {
@@ -131,7 +132,7 @@ export class StoreProvider extends Component<StoreProviderProps, State>
 
             // Process middleware callbacks
             let die = false;
-            middleware.forEach((obj)=>
+            middleware.forEach((obj) =>
             {
                 // Should we "break"?
                 if (die) { return; }
@@ -149,14 +150,14 @@ export class StoreProvider extends Component<StoreProviderProps, State>
         }
 
         // Set state and call all subscribers with the new value for the state
-        this.setState({[propertyName] : value} as State, ()=>
+        this.setState({[propertyName] : value} as State, () =>
         {
-            self.subscribers.forEach((obj: CallbackObject)=>
+            self.subscribers.forEach((obj: CallbackObject) =>
             {
                 if (obj.propertyName === propertyName) {
                     obj.callBack(value);
                 }
-            })
+            });
         });
     }
 
@@ -203,14 +204,15 @@ export class StoreProvider extends Component<StoreProviderProps, State>
         this._statechange('householdSize', null);
     }
 
-    render()
+    /* tslint:disable: max-line-length */
+    public render()
     {
         return (
             <StoreContext.Provider
                 value={{
                     state: this.state,
-                    subscribe: (propertyName: string, callBack: Function)=>this.subscribe(propertyName, callBack),
-                    addMiddleware: (propertyName:string, callBack: Function)=>this.addMiddleware(propertyName, callBack),
+                    subscribe: (propertyName: string, callBack: Function) => this.subscribe(propertyName, callBack),
+                    addMiddleware: (propertyName: string, callBack: Function) => this.addMiddleware(propertyName, callBack),
 
                     /**
                      * Convention is setStateVarible: (newValue)=>this._statechange('stateVariable', newValue)
@@ -218,19 +220,19 @@ export class StoreProvider extends Component<StoreProviderProps, State>
                      */
                     methods:
                     {
-                        resetSearch: ()=>this.resetSearch(),
-                        setCurrentUser: (userInfo: UserType)=>this._statechange('currentUser', userInfo),
-                        setCurrentMember: (memberInfo: MemberType)=>this._statechange('currentMember', memberInfo),
-                        setCurrentHousehold: (householdInfo: HouseholdType)=>this._statechange('currentHousehold', householdInfo),
-                        setHouseholdSize: (householdSize: number | null)=>this._statechange('householdSize', householdSize),
-                        setCurrentMemberPhoto: (photo: string | null)=>this._statechange('currentMemberPhoto', photo),
-                        setPovertyData: (povertyData: PovertyType)=>this._statechange('povertyData', povertyData),
-                        setError: (error: string | object)=>this._statechange('error', error)
+                        resetSearch: () => this.resetSearch(),
+                        setCurrentUser: (userInfo: UserType) => this._statechange('currentUser', userInfo),
+                        setCurrentMember: (memberInfo: MemberType) => this._statechange('currentMember', memberInfo),
+                        setCurrentHousehold: (householdInfo: HouseholdType) => this._statechange('currentHousehold', householdInfo),
+                        setHouseholdSize: (householdSize: number | null) => this._statechange('householdSize', householdSize),
+                        setCurrentMemberPhoto: (photo: string | null) => this._statechange('currentMemberPhoto', photo),
+                        setPovertyData: (povertyData: PovertyType) => this._statechange('povertyData', povertyData),
+                        setError: (error: string | object) => this._statechange('error', error)
                     }
                 } as any}
             >
                 {this.props.children}
             </StoreContext.Provider>
-        )
+        );
     }
 }

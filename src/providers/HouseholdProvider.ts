@@ -7,16 +7,16 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-interface HouseholdResponse extends Response {
+interface IHouseholdResponse extends Response {
     success: boolean;
     status: number;
     data: HouseholdType;
 }
 
-interface MemberCountResponse extends Response {
+interface IMemberCountResponse extends Response {
     success: boolean;
     status: number;
-    data: {Count: number}
+    data: {Count: number};
 }
 
 /**
@@ -29,7 +29,7 @@ export class HouseholdProvider
      *
      * @param {string} authKey
      */
-    constructor(private authKey:string)
+    constructor(private authKey: string)
     {
         if (authKey.length === 0) {
              throw new Error('authKey is a required argument');
@@ -42,7 +42,7 @@ export class HouseholdProvider
      * @param {object} householdData
      * @return {Promise<Response>}
      */
-    create(householdData: HouseholdType): Promise<HouseholdResponse>
+    public create(householdData: HouseholdType): Promise<IHouseholdResponse>
     {
         let uri = BASE_URI + 'households';
         uri += '?auth_key=' + this.authKey;
@@ -64,7 +64,7 @@ export class HouseholdProvider
      * @param {string} [val]
      * @return {Promise<Response>}
      */
-    read(val: string | number | null = null): Promise<HouseholdResponse>
+    public read(val: string | number | null = null): Promise<IHouseholdResponse>
     {
         let uri = BASE_URI;
 
@@ -97,7 +97,7 @@ export class HouseholdProvider
      * @param {object} householdData
      * @return {Promise<Response>}
      */
-    update(householdData: HouseholdType)
+    public update(householdData: HouseholdType)
     {
         let uri = BASE_URI + 'households';
         uri += '?auth_key=' + this.authKey;
@@ -115,17 +115,17 @@ export class HouseholdProvider
 
     /**
      * Get the number of members in a household.
-     * 
+     *
      * @param {int} householdId
      * @return {Promise<Response>}
      */
-    memberCount(householdId: string | number): Promise<Number>
+    public memberCount(householdId: string | number): Promise<number>
     {
         let uri = BASE_URI + 'household-member-count/' + `${householdId}`;
         uri += '?auth_key=' + this.authKey;
 
         return frak.get(uri)
-        .then((response: MemberCountResponse)=>
+        .then((response: IMemberCountResponse) =>
         {
             if (response.success) {
                 return response.data.Count;
@@ -133,9 +133,9 @@ export class HouseholdProvider
                 return null;
             }
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             return error;
-        })
+        });
     }
 }

@@ -6,4 +6,4 @@ export const countyModel =
     CountyName: ""
 };
 
-export type CountyType = Readonly<typeof countyModel>
+export type CountyType = Readonly<typeof countyModel>;

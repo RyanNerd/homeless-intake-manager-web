@@ -10,11 +10,15 @@ import {
 } from "../../utils/utilities";
 import {IntakeType} from "../../models/IntakeModel";
 
-interface Props
+interface IRecord {
+    Id: number | string;
+}
+
+interface IProps
 {
-    onIntakeSelected: Function
-    language: string,
-    intakes: IntakeType[]
+    onIntakeSelected: (intakeinfo: IRecord) => void;
+    language: string;
+    intakes: IntakeType[];
 }
 
 const initialSelectedIntakeId: number | null = null;
@@ -23,19 +27,19 @@ const initialState =  {
         selectedIntakeId: initialSelectedIntakeId,
         language: initialLanguage
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 /**
  * IntakeGrid Class - Intake Table
  */
-export class IntakeGrid extends Component<Props, State>
+export class IntakeGrid extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidUpdate
      */
-    componentDidUpdate()
+    public componentDidUpdate()
     {
         if (this.props.language && this.props.language !== this.state.language) {
             UpdateLanguage(this.props.language);
@@ -48,20 +52,20 @@ export class IntakeGrid extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {int} id
      */
-    handleIntakeSelected(e: MouseEvent<Button>, id: number | null)
+    private handleIntakeSelected(e: MouseEvent<Button>, id: number | null)
     {
         e.preventDefault();
-        let intakeInfo = getRecordById(id, this.props.intakes);
+        const intakeInfo = getRecordById(id, this.props.intakes);
         this.props.onIntakeSelected(intakeInfo);
     }
 
-    render()
+    public render()
     {
         const IntakeRow = (intake: IntakeType) =>
         {
             const year = intake.IntakeYear;
-            const month = intake.IntakeMonth ? parseInt(intake.IntakeMonth.toString()).pad(2) : '';
-            const day = intake.IntakeDay ? parseInt(intake.IntakeDay.toString()).pad(2) : '';
+            const month = intake.IntakeMonth ? parseInt(intake.IntakeMonth.toString(), 10).pad(2) : '';
+            const day = intake.IntakeDay ? parseInt(intake.IntakeDay.toString(), 10).pad(2) : '';
             const intakeDate = year + '-' + month + '-' + day;
             const notes = intake.Notes || "";
 
@@ -75,7 +79,7 @@ export class IntakeGrid extends Component<Props, State>
                         <Button
                             id={"member-grid-button-" + intake.Id}
                             className={"member-grid-button"}
-                            onClick={(e: MouseEvent<Button>)=>{this.handleIntakeSelected(e, intake.Id)}}
+                            onClick={(e: MouseEvent<Button>) => {this.handleIntakeSelected(e, intake.Id); }}
                         >
                             Select
                         </Button>
@@ -89,7 +93,7 @@ export class IntakeGrid extends Component<Props, State>
                     <td><input type="text" value={intake.PerishableWeight} disabled={true}/></td>
                     <td><input type="text" value={notes} disabled={true}/></td>
                 </tr>
-            )
+            );
         };
 
         if (!this.props.intakes) {

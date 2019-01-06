@@ -22,14 +22,14 @@ const currentDate = new Date();
 const currentYear = currentDate.getFullYear();
 const BADGE_LENGTH_MAX = 6;
 
-interface Props {
-    householdProvider: HouseholdProvider
-    memberProvider: MemberProvider
-    memberInfo: MemberType
-    keyboard: boolean
-    context: ContextType
-    onHide: Function
-    show: boolean
+interface IProps {
+    householdProvider: HouseholdProvider;
+    memberProvider: MemberProvider;
+    memberInfo: MemberType;
+    keyboard: boolean;
+    context: ContextType;
+    onHide: (memberData: any) => void;
+    show: boolean;
 }
 
 const validationTypes: "error" | "warning" | "success" | null = null;
@@ -61,17 +61,17 @@ export const MemberEdit = (props?: any) => (
 /**
  * MemberEdit Class Modal
  */
-class MemberEditBase extends Component<Props, State>
+class MemberEditBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {object} nextProps
-     * @return {object | null}
+     * @param {IProps} nextProps
+     * @return {State | null}
      */
-    static getDerivedStateFromProps(nextProps: Props)
+    public static getDerivedStateFromProps(nextProps: IProps)
     {
         if (nextProps.memberInfo && nextProps.show) {
             return {memberInfo: nextProps.memberInfo, shouldShow: true};
@@ -85,7 +85,7 @@ class MemberEditBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
         this.setState({shouldShow: false});
@@ -95,7 +95,7 @@ class MemberEditBase extends Component<Props, State>
      * Fires when the modal has played all the animations and is displayed.
      * Similar to componentDidUpdate()
      */
-    handleOnEntered()
+    private handleOnEntered()
     {
         // Modal is now displayed so validate the memberInfo.
         this.validate();
@@ -107,7 +107,7 @@ class MemberEditBase extends Component<Props, State>
      * @param {Event} e
      * @param {bool} shouldSave
      */
-    handleModalDismiss(e: FormEvent<FormControl>, shouldSave: boolean)
+    private handleModalDismiss(e: FormEvent<FormControl>, shouldSave: boolean)
     {
         // Was the save button clicked to dismiss?
         if (shouldSave) {
@@ -158,11 +158,11 @@ class MemberEditBase extends Component<Props, State>
     {
         const methods = this.props.context.methods;
         this.props.householdProvider.memberCount(householdId)
-        .then((response)=>
+        .then((response) =>
         {
             methods.setHouseholdSize(response);
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             this.onError(error);
         });
@@ -173,16 +173,16 @@ class MemberEditBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleOnChange(e: FormEvent<FormControl>)
+    private handleOnChange(e: FormEvent<FormControl>)
     {
-        let memberInfo = this.state.memberInfo;
+        const memberInfo = this.state.memberInfo;
 
         const target = e.target as ITarget;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         memberInfo[name] = value;
 
-        this.setState({memberInfo: memberInfo}, ()=>{this.validate(name)});
+        this.setState({memberInfo: memberInfo}, () => {this.validate(name); });
     }
 
     //////////////
@@ -194,42 +194,42 @@ class MemberEditBase extends Component<Props, State>
      *
      * @param {string} [name] The name of the field to be validated.
      */
-    validate(name?: string)
+    private validate(name?: string)
     {
         if (!name) {
             this.setState({
                 validName: this.validNameState(),
                 validDOB: this.validDOBState(),
                 validGender: this.validGenderState(),
-            },()=>{this.canSave()});
+            }, () => {this.canSave(); });
             return;
         }
 
         switch (name) {
             case 'FirstName':
-                this.setState({validName: this.validNameState()},()=>{this.canSave()});
+                this.setState({validName: this.validNameState()}, () => {this.canSave(); });
                 break;
             case 'LastName':
-                this.setState({validName: this.validNameState()},()=>{this.canSave()});
+                this.setState({validName: this.validNameState()}, () => {this.canSave(); });
                 break;
             case 'BirthYear':
-                this.setState({validDOB: this.validDOBState()},()=>{this.canSave()});
+                this.setState({validDOB: this.validDOBState()}, () => {this.canSave(); });
                 break;
             case 'BirthMonth':
-                this.setState({validDOB: this.validDOBState()},()=>{this.canSave()});
+                this.setState({validDOB: this.validDOBState()},  () => {this.canSave(); });
                 break;
             case 'BirthDay':
-                this.setState({validDOB: this.validDOBState()},()=>{this.canSave()});
+                this.setState({validDOB: this.validDOBState()}, () => {this.canSave(); });
                 break;
             case 'Gender':
-                this.setState({validGender: this.validGenderState()},()=>{this.canSave()});
+                this.setState({validGender: this.validGenderState()}, () => {this.canSave(); });
         }
     }
 
     /**
      * Set save state to true if the data is in a valid state that changes can be saved.
      */
-    canSave()
+    private canSave()
     {
         this.setState({canSave: !(this.state.validName || this.state.validDOB || this.state.validGender)});
     }
@@ -239,7 +239,7 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {string | null} Return null if valid, otherwise 'error' or 'warning' string.
      */
-    validNameState(): "error" | "warning" | "success" | null
+    private validNameState(): "error" | "warning" | "success" | null
     {
         return this.validFirstName() || this.validLastName();
     }
@@ -249,7 +249,7 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the first name is not valid, null otherwise.
      */
-    validFirstName(): "error" | "warning" | "success" | null
+    private validFirstName(): "error" | "warning" | "success" | null
     {
         const firstName = this.state.memberInfo.FirstName;
         if (!firstName || firstName === '') {
@@ -267,7 +267,7 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the first name is not valid, null otherwise.
      */
-    validLastName(): "error" | "warning" | "success" | null
+    private validLastName(): "error" | "warning" | "success" | null
     {
         const lastName = this.state.memberInfo.LastName;
         if (!lastName || lastName === '') {
@@ -285,9 +285,9 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {string | null} Return null if valid, otherwise 'error' or 'warning'.
      */
-    validDOBState(): "error" | "warning" | "success" | null
+    private validDOBState(): "error" | "warning" | "success" | null
     {
-        return this.validBirthYear() || this.validBirthMonth() || this.validBirthDay()
+        return this.validBirthYear() || this.validBirthMonth() || this.validBirthDay();
     }
 
     /**
@@ -295,9 +295,9 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {string | null} Return null if year is valid, otherwise 'error' or 'warning'
      */
-    validBirthYear(): "error" | "warning" | "success" | null
+    private validBirthYear(): "error" | "warning" | "success" | null
     {
-        const birthYear = parseInt(this.state.memberInfo.BirthYear);
+        const birthYear = parseInt(this.state.memberInfo.BirthYear, 10);
         if (!birthYear) {
             return 'warning';
         }
@@ -314,9 +314,9 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {null | string} Return null if valid, otherwise 'error', or 'warning'
      */
-    validBirthMonth(): "error" | "warning" | "success" | null
+    private validBirthMonth(): "error" | "warning" | "success" | null
     {
-        const birthMonth = parseInt(this.state.memberInfo.BirthMonth);
+        const birthMonth = parseInt(this.state.memberInfo.BirthMonth, 10);
         if (!birthMonth) {
             return 'warning';
         }
@@ -331,9 +331,9 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {null | string} Return null if valid, otherwise 'error', or 'warning'
      */
-    validBirthDay(): "error" | "warning" | "success" | null
+    private validBirthDay(): "error" | "warning" | "success" | null
     {
-        const birthDay = parseInt(this.state.memberInfo.BirthDay);
+        const birthDay = parseInt(this.state.memberInfo.BirthDay, 10);
         if (!birthDay) {
             return 'warning';
         }
@@ -342,7 +342,7 @@ class MemberEditBase extends Component<Props, State>
             return 'error';
         }
 
-        const birthMonth = parseInt(this.state.memberInfo.BirthMonth);
+        const birthMonth = parseInt(this.state.memberInfo.BirthMonth, 10);
         if (birthMonth === 2 && birthDay > 28) {
             return 'error';
         }
@@ -357,7 +357,7 @@ class MemberEditBase extends Component<Props, State>
      *
      * @return {null | string} Return null if valid, otherwise 'error', or 'warning'
      */
-    validGenderState(): "error" | "warning" | "success" | null
+    private validGenderState(): "error" | "warning" | "success" | null
     {
         const gender = this.state.memberInfo.Gender;
         if (!gender) {
@@ -370,18 +370,22 @@ class MemberEditBase extends Component<Props, State>
         return null;
     }
 
-    render()
+    public render()
     {
         return(
             <Modal
                 bsSize="large"
                 show={this.state.shouldShow}
-                onHide={(e: FormEvent<FormControl>)=>this.handleModalDismiss(e, false)}
-                onEntered={()=>this.handleOnEntered()}
+                onHide={(e: FormEvent<FormControl>) => this.handleModalDismiss(e, false)}
+                onEntered={() => this.handleOnEntered()}
                 keyboard={this.props.keyboard}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Member Maintenance ({this.state.memberInfo && this.state.memberInfo.Id && parseInt(this.state.memberInfo.Id).pad(BADGE_LENGTH_MAX)})</Modal.Title>
+                    <Modal.Title>
+                        Member Maintenance ({this.state.memberInfo &&
+                            this.state.memberInfo.Id &&
+                            parseInt(this.state.memberInfo.Id, 10).pad(BADGE_LENGTH_MAX)})
+                    </Modal.Title>
                 </Modal.Header>
 
                 {this.state.memberInfo &&
@@ -403,7 +407,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={50}
                                         value={this.state.memberInfo.FirstName}
                                         name="FirstName"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
 
@@ -415,7 +419,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={1}
                                         value={this.state.memberInfo.MiddleInitial}
                                         name="MiddleInitial"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
 
@@ -427,7 +431,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={50}
                                         value={this.state.memberInfo.LastName}
                                         name="LastName"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                             </FormGroup>
@@ -447,7 +451,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={4}
                                         value={this.state.memberInfo.BirthYear}
                                         name="BirthYear"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                                 <Col sm={1}>
@@ -458,7 +462,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={2}
                                         value={this.state.memberInfo.BirthMonth}
                                         name="BirthMonth"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                                 <Col sm={1}>
@@ -469,7 +473,7 @@ class MemberEditBase extends Component<Props, State>
                                         maxLength={2}
                                         value={this.state.memberInfo.BirthDay}
                                         name="BirthDay"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                             </FormGroup>
@@ -485,7 +489,7 @@ class MemberEditBase extends Component<Props, State>
                                     value="M"
                                     checked={this.state.memberInfo.Gender === 'M'}
                                     name="Gender"
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Male
                                 </Radio>
@@ -495,7 +499,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="F"
                                     checked={this.state.memberInfo.Gender === 'F'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Female
                                 </Radio>{" "}
@@ -508,7 +512,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     checked={this.state.memberInfo.Disability}
                                     name="Disability"
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Disability
                                 </Checkbox>
@@ -517,7 +521,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     checked={this.state.memberInfo.Veteran}
                                     name="Veteran"
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Veteran
                                 </Checkbox>
@@ -530,7 +534,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="A"
                                     checked={this.state.memberInfo.Race === 'A'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Asian
                                 </Radio>
@@ -539,7 +543,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="B"
                                     checked={this.state.memberInfo.Race === 'B'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Black
                                 </Radio>
@@ -548,7 +552,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="H"
                                     checked={this.state.memberInfo.Race === 'H'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Hispanic
                                 </Radio>
@@ -557,7 +561,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="N"
                                     checked={this.state.memberInfo.Race === 'N'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Native American
                                 </Radio>
@@ -567,7 +571,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="P"
                                     checked={this.state.memberInfo.Race === 'P'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Pacific Islander
                                 </Radio>
@@ -576,7 +580,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="W"
                                     checked={this.state.memberInfo.Race === 'W'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     White
                                 </Radio>
@@ -585,7 +589,7 @@ class MemberEditBase extends Component<Props, State>
                                     inline
                                     value="O"
                                     checked={this.state.memberInfo.Race === 'O'}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Other
                                 </Radio>
@@ -600,7 +604,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="I"
                                         checked={this.state.memberInfo.Education === 'I'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         0-3 Years
                                     </Radio>
@@ -609,7 +613,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="P"
                                         checked={this.state.memberInfo.Education === 'P'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Preschool
                                     </Radio>
@@ -618,7 +622,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="K"
                                         checked={this.state.memberInfo.Education === 'K'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Kindergarten
                                     </Radio>
@@ -627,7 +631,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="Y"
                                         checked={this.state.memberInfo.Education === 'Y'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Youth:1st-6th Grade
                                     </Radio>
@@ -636,7 +640,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="9"
                                         checked={this.state.memberInfo.Education === '9'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         9th or less
                                     </Radio>
@@ -645,7 +649,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="10"
                                         checked={this.state.memberInfo.Education === '10'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         10th
                                     </Radio>
@@ -654,7 +658,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="11"
                                         checked={this.state.memberInfo.Education === '11'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         11th
                                     </Radio>
@@ -663,7 +667,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="12"
                                         checked={this.state.memberInfo.Education === '12'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         12th
                                     </Radio>
@@ -672,7 +676,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="H"
                                         checked={this.state.memberInfo.Education === 'H'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         High School Grad
                                     </Radio>
@@ -681,7 +685,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="G"
                                         checked={this.state.memberInfo.Education === 'G'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         GED
                                     </Radio>
@@ -690,7 +694,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="S"
                                         checked={this.state.memberInfo.Education === 'S'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         12+(Post Secondary)
                                     </Radio>
@@ -704,7 +708,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="EducationAssociate"
                                         inline
                                         checked={this.state.memberInfo.EducationAssociate}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Associates
                                     </Checkbox>
@@ -712,7 +716,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="EducationBachelors"
                                         inline
                                         checked={this.state.memberInfo.EducationBachelors}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Bachelors
                                     </Checkbox>
@@ -726,7 +730,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="CanWork"
                                         inline
                                         checked={this.state.memberInfo.CanWork}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Is this person able to work
                                     </Checkbox>
@@ -736,7 +740,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         disabled={!this.state.memberInfo.CanWork}
                                         checked={this.state.memberInfo.Employed}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Currently Employed
                                     </Checkbox>
@@ -751,7 +755,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="W"
                                         checked={this.state.memberInfo.IncomeType === 'W'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Weekly
                                     </Radio>
@@ -760,7 +764,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="B"
                                         checked={this.state.memberInfo.IncomeType === 'B'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Bi-Monthly
                                     </Radio>
@@ -769,7 +773,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="M"
                                         checked={this.state.memberInfo.IncomeType === 'M'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Monthly
                                     </Radio>
@@ -778,7 +782,7 @@ class MemberEditBase extends Component<Props, State>
                                         inline
                                         value="A"
                                         checked={this.state.memberInfo.IncomeType === 'A'}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Annual
                                     </Radio>
@@ -793,7 +797,7 @@ class MemberEditBase extends Component<Props, State>
                                         type="text"
                                         placeholder="$"
                                         value={this.state.memberInfo.IncomeTotal}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                                 <Col sm={3}>
@@ -803,7 +807,7 @@ class MemberEditBase extends Component<Props, State>
                                         placeholder="Other sources of income"
                                         maxLength={45}
                                         value={this.state.memberInfo.IncomeOther}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
                             </FormGroup>
@@ -815,7 +819,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="IncomeSSI"
                                         inline
                                         checked={this.state.memberInfo.IncomeSSI}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         SSI/SSDI
                                     </Checkbox>
@@ -823,7 +827,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="IncomeSocialSecurity"
                                         inline
                                         checked={this.state.memberInfo.IncomeSocialSecurity}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                        Social Security
                                     </Checkbox>
@@ -831,7 +835,7 @@ class MemberEditBase extends Component<Props, State>
                                         name="IncomeChildSupport"
                                         inline
                                         checked={this.state.memberInfo.IncomeChildSupport}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Child Support
                                     </Checkbox>
@@ -844,7 +848,7 @@ class MemberEditBase extends Component<Props, State>
                                     <Checkbox
                                         name="HealthInsurance"
                                         checked={this.state.memberInfo.HealthInsurance}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Member has Health Insurance
                                     </Checkbox>
@@ -853,7 +857,7 @@ class MemberEditBase extends Component<Props, State>
                                         disabled={!this.state.memberInfo.HealthInsurance}
                                         inline
                                         checked={this.state.memberInfo.HealthInsurancePrivate}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Private
                                     </Checkbox>
@@ -862,7 +866,7 @@ class MemberEditBase extends Component<Props, State>
                                         disabled={!this.state.memberInfo.HealthInsurance}
                                         inline
                                         checked={this.state.memberInfo.HealthInsuranceMedicaid}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Medicaid
                                     </Checkbox>
@@ -871,7 +875,7 @@ class MemberEditBase extends Component<Props, State>
                                         disabled={!this.state.memberInfo.HealthInsurance}
                                         inline
                                         checked={this.state.memberInfo.HealthInsuranceMedicare}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Medicare
                                     </Checkbox>
@@ -880,7 +884,7 @@ class MemberEditBase extends Component<Props, State>
                                         disabled={!this.state.memberInfo.HealthInsurance}
                                         inline
                                         checked={this.state.memberInfo.HealthInsuranceCHIP}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         CHIP
                                     </Checkbox>
@@ -889,7 +893,7 @@ class MemberEditBase extends Component<Props, State>
                                         disabled={!this.state.memberInfo.HealthInsurance}
                                         inline
                                         checked={this.state.memberInfo.HealthInsurancePCN}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         PCN
                                     </Checkbox>
@@ -901,7 +905,7 @@ class MemberEditBase extends Component<Props, State>
                                     <Checkbox
                                         name="Active"
                                         checked={this.state.memberInfo.Active}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     >
                                         Member is Active
                                     </Checkbox>
@@ -912,9 +916,9 @@ class MemberEditBase extends Component<Props, State>
                 }
 
                 <Modal.Footer>
-                    <Button onClick={(e)=>this.handleModalDismiss(e, false)}>Cancel</Button>
+                    <Button onClick={(e) => this.handleModalDismiss(e, false)}>Cancel</Button>
                     <Button
-                        onClick={(e)=>this.handleModalDismiss(e, true)}
+                        onClick={(e) => this.handleModalDismiss(e, true)}
                         bsStyle="primary"
                         disabled={!this.state.canSave}
                     >
@@ -922,6 +926,6 @@ class MemberEditBase extends Component<Props, State>
                     </Button>
                 </Modal.Footer>
             </Modal>
-        )
+        );
     }
 }

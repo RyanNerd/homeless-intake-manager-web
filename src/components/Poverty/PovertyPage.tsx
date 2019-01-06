@@ -7,8 +7,8 @@ import {PovertyProvider} from "../../providers/PovertyProvider";
 import { ContextType } from "../StoreContext";
 import {PovertyType} from "../../models/PovertyModel";
 
-interface Props {
-    context: ContextType
+interface IProps {
+    context: ContextType;
     povertyProvider: PovertyProvider;
 }
 
@@ -34,14 +34,14 @@ export const PovertyPage = (props?: any) => (
 /**
  * PovertyPage Class
  */
-class PovertyPageBase extends Component<Props, State>
+class PovertyPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
         this.populatePovertyGrid(false);
     }
@@ -51,7 +51,7 @@ class PovertyPageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object|string)
+    private onError(error: object|string)
     {
         this.props.context.methods.setError(error);
     }
@@ -62,10 +62,10 @@ class PovertyPageBase extends Component<Props, State>
      *
      * @param {object} poverty
      */
-    protected onPovertySelected(poverty: PovertyType)
+    private onPovertySelected(poverty: PovertyType)
     {
 
-        let povertyInfo = {...poverty};
+        const povertyInfo = {...poverty};
         this.setState({povertyInfo: povertyInfo, showPovertyEdit: true});
     }
 
@@ -82,7 +82,7 @@ class PovertyPageBase extends Component<Props, State>
         // Were changes made, or is the povertyData array empty?
         if (shouldRefresh || context.state.povertyData.length === 0) {
             this.props.povertyProvider.read()
-            .then((response)=>
+            .then((response) =>
             {
                 if (response.success) {
                     methods.setPovertyData(response.data);
@@ -90,7 +90,7 @@ class PovertyPageBase extends Component<Props, State>
                     this.onError(response);
                 }
             })
-            .catch((error)=>
+            .catch((error) =>
             {
                 this.onError(error);
             });
@@ -111,7 +111,7 @@ class PovertyPageBase extends Component<Props, State>
         }
     }
 
-    render()
+    public render()
     {
         const context: ContextType = this.props.context;
 
@@ -121,18 +121,18 @@ class PovertyPageBase extends Component<Props, State>
                 {context.state.povertyData &&
                     <PovertyGrid
                         povertyData={context.state.povertyData}
-                        onPovertySelected={(poverty: PovertyType)=>this.onPovertySelected(poverty)}
+                        onPovertySelected={(poverty: PovertyType) => this.onPovertySelected(poverty)}
                     />
                 }
 
                 {/* PovertyEdit Modal */}
                 <PovertyEdit
                     show={this.state.showPovertyEdit}
-                    onHide={(shouldRefresh: boolean)=>this.handlePovertyEditClose(shouldRefresh)}
+                    onHide={(shouldRefresh: boolean) => this.handlePovertyEditClose(shouldRefresh)}
                     keyboard={true}
                     povertyInfo={this.state.povertyInfo}
                 />
             </div>
-        )
+        );
     }
 }

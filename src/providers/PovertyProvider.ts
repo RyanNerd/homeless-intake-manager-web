@@ -1,7 +1,7 @@
 import Frak from "./Frak";
 import {PovertyType} from "../models/PovertyModel";
 
-interface PovertyResponse extends Response {
+interface IPovertyResponse extends Response {
     success: boolean;
     status: number;
     data: PovertyType[];
@@ -37,7 +37,7 @@ export class PovertyProvider
      * @param {object} povertyData
      * @return {Promise<Response>}
      */
-    create(povertyData: PovertyType)
+    public create(povertyData: PovertyType)
     {
         let uri = BASE_URI + 'poverty';
         uri += '?auth_key=' + this.authKey;
@@ -59,7 +59,7 @@ export class PovertyProvider
      * @param {string} [val]
      * @return {Promise<Response>}
      */
-    read(val: string | number = null): Promise<PovertyResponse>
+    public read(val: string | number = null): Promise<IPovertyResponse>
     {
         let uri = BASE_URI;
 
@@ -99,7 +99,7 @@ export class PovertyProvider
      * @param {object} povertyData
      * @return {Promise<Response>}
      */
-    update(povertyData: PovertyType): Promise<PovertyResponse>
+    public update(povertyData: PovertyType): Promise<IPovertyResponse>
     {
         let uri = BASE_URI + 'poverty';
         uri += '?auth_key=' + this.authKey;

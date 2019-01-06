@@ -7,7 +7,7 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH;
 
-interface CountyResponse extends Response {
+interface ICountyResponse extends Response {
     success: boolean;
     status: number;
     data: CountyType[];
@@ -37,7 +37,7 @@ export class CountyProvider
      * @param {string} val
      * @return {Promise<Response>}
      */
-    read(val: string = null): Promise<CountyResponse>
+    public read(val: string = null): Promise<ICountyResponse>
     {
         let uri = BASE_URI;
 
