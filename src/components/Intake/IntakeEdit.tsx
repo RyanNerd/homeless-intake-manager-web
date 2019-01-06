@@ -26,26 +26,27 @@ interface IStyle extends CSSProperties
     tabIndex: string;
 }
 
-interface Props {
-    context: ContextType
-    intakeProvider: IntakeProvider
-    memberProvider: MemberProvider
-    storageProvider: StorageProvider
-    intakeInfo: IntakeType
-    keyboard: boolean
-    language: string
-    onHide: Function
-    show: boolean
+interface IProps {
+    context: ContextType;
+    intakeProvider: IntakeProvider;
+    memberProvider: MemberProvider;
+    storageProvider: StorageProvider;
+    intakeInfo: IntakeType;
+    keyboard: boolean;
+    language: string;
+    onHide: (shouldHide: boolean) => void;
+    show: boolean;
 }
 
+/* tslint:disable: ban-types */
 type SigpadType = {
     current: {
-        clear: Function
+        clear: () => void
         getTrimmedCanvas: Function
-        fromDataURL: Function
-        isEmpty: Function
+        fromDataURL: (signature: string) => void
+        isEmpty: () => void
     }
-}
+};
 
 const initialState = {
     signatureChanged: false,
@@ -54,7 +55,7 @@ const initialState = {
     language: 'en',
     canSave: false
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 const today = new Date();
 const currentYear = today.getFullYear();
@@ -75,9 +76,9 @@ export const IntakeEdit = (props?: any) => (
 /**
  * IntakeEdit class - Intake Edit Modal
  */
-class IntakeEditBase extends Component<Props, State>
+class IntakeEditBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * SignaturePad 3rd party reference
@@ -90,7 +91,7 @@ class IntakeEditBase extends Component<Props, State>
      * @param {Props} nextProps
      * @return {Props | null}
      */
-    static getDerivedStateFromProps(nextProps: Props)
+    public static getDerivedStateFromProps(nextProps: IProps)
     {
         if (nextProps.intakeInfo && nextProps.show) {
             return {intakeInfo: nextProps.intakeInfo, shouldShow: true};
@@ -104,7 +105,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -113,14 +114,14 @@ class IntakeEditBase extends Component<Props, State>
      * Fires when the modal has played all the animations and is displayed.
      * Similar to componentDidUpdate()
      */
-    handleOnEntered()
+    private handleOnEntered()
     {
-        this.setState({intakeInfo: {...this.props.intakeInfo}, signatureChanged: false},()=>
+        this.setState({intakeInfo: {...this.props.intakeInfo}, signatureChanged: false}, () =>
         {
             // If there is a signature for this intake record then we need to load it.
             if (this.props.intakeInfo.SignatureId) {
                 this.props.storageProvider.read(this.props.intakeInfo.SignatureId)
-                .then((response)=>
+                .then((response) =>
                 {
                     if (response.success) {
                         this.setSignatureData(response.data.Content);
@@ -129,17 +130,18 @@ class IntakeEditBase extends Component<Props, State>
                         this.onError(response);
                     }
                 })
-                .catch((error)=>
+                .catch((error) =>
                 {
                     this.onError(error);
                 });
             }
 
             // Force a re-translation when the modal is made visible
-            let l10n = document['l10n'];
+            // tslint:disable-next-line: no-string-literal
+            const l10n = document['l10n'];
             UpdateLanguage(this.props.language);
             l10n.translateDocument()
-            .then(()=>{
+            .then(() => {
                 // We are golden
             });
 
@@ -147,7 +149,7 @@ class IntakeEditBase extends Component<Props, State>
 
             // Work-around for React stupidity in not allowing nulls as a value on controlled elements
             if (!this.state.intakeInfo.Id) {
-                let named = document.querySelectorAll('[name]') as INodeListOf;
+                const named = document.querySelectorAll('[name]') as INodeListOf;
                 for (const namedElement of named) {
                     if (namedElement.value) {
                         namedElement.value = intakeModel[namedElement.name];
@@ -162,7 +164,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    clearSignature(e: MouseEvent<Button>)
+    private clearSignature(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
@@ -176,7 +178,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @return {string} base64string image data
      */
-    getSignatureData(): string
+    private getSignatureData(): string
     {
         return this.sigPad.current.getTrimmedCanvas().toDataURL('image/png');
     }
@@ -186,7 +188,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @param {string} signature base64string image data
      */
-    setSignatureData(signature: string)
+    private setSignatureData(signature: string)
     {
         this.sigPad.current.fromDataURL(signature);
     }
@@ -196,7 +198,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @return {boolean}
      */
-    hasSignature(): boolean
+    private hasSignature(): boolean
     {
         return !this.sigPad.current.isEmpty();
     }
@@ -207,7 +209,7 @@ class IntakeEditBase extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {boolean} shouldSave
      */
-    handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
+    private handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
         if (!shouldSave)
         {
@@ -215,11 +217,11 @@ class IntakeEditBase extends Component<Props, State>
             return;
         }
 
-        let intakeInfo = this.state.intakeInfo;
+        const intakeInfo = this.state.intakeInfo;
 
         // Do we need to save the signature image?
         if (this.state.signatureChanged && intakeInfo) {
-            let storageData =
+            const storageData =
             {
                 Id: intakeInfo.SignatureId,
                 Content: this.getSignatureData(),
@@ -267,7 +269,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @param {IntakeType} intakeInfo IntakeInfo record object
      */
-    updateIntakeRecord(intakeInfo: IntakeType)
+    private updateIntakeRecord(intakeInfo: IntakeType)
     {
         if (intakeInfo.Id) {
             this.props.intakeProvider.update(intakeInfo)
@@ -305,16 +307,16 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleOnChange(e: FormEvent<FormControl>)
+    private handleOnChange(e: FormEvent<FormControl>)
     {
-        let intakeInfo = this.state.intakeInfo as IntakeType;
+        const intakeInfo = this.state.intakeInfo as IntakeType;
 
         const target = e.target as ITarget;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         intakeInfo[name] = value;
 
-        this.setState({intakeInfo: intakeInfo},()=>
+        this.setState({intakeInfo: intakeInfo}, () =>
         {
             this.setState({canSave: this.canSave()});
         });
@@ -323,7 +325,7 @@ class IntakeEditBase extends Component<Props, State>
     /**
      * Fires when the signature pad has changed.
      */
-    handleSignatureChanged()
+    private handleSignatureChanged()
     {
         this.setState({signatureChanged: true, canSave: this.canSave()});
     }
@@ -337,12 +339,12 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @return {string | null}
      */
-    intakeDateValid(): "success" | "warning" | "error" | null
+    private intakeDateValid(): "success" | "warning" | "error" | null
     {
         const intakeInfo = this.state.intakeInfo;
-        const intakeDay = parseInt(intakeInfo.IntakeDay.toString());
-        const intakeMonth = parseInt(intakeInfo.IntakeMonth.toString());
-        const intakeYear = parseInt(intakeInfo.IntakeYear.toString());
+        const intakeDay = parseInt(intakeInfo.IntakeDay.toString(), 10);
+        const intakeMonth = parseInt(intakeInfo.IntakeMonth.toString(), 10);
+        const intakeYear = parseInt(intakeInfo.IntakeYear.toString(), 10);
 
         if (!intakeYear ||
             !intakeDay  ||
@@ -362,7 +364,6 @@ class IntakeEditBase extends Component<Props, State>
             return 'error';
         }
 
-
         // Intake date can not be set to the future.
         const intakeDate = new Date(intakeYear + '-' + intakeMonth + '-' + intakeDay);
         const today = new Date();
@@ -378,7 +379,7 @@ class IntakeEditBase extends Component<Props, State>
      *
      * @return {boolean}
      */
-    canSave(): boolean
+    private canSave(): boolean
     {
         const intakeInfo = this.state.intakeInfo;
         // Intake date must be valid (intakeDateValid() will be null if the date is valid).
@@ -398,7 +399,7 @@ class IntakeEditBase extends Component<Props, State>
         return false;
     }
 
-    render()
+    public render()
     {
         const context = this.props.context;
 
@@ -410,8 +411,8 @@ class IntakeEditBase extends Component<Props, State>
         return(
             <Modal
                 show={this.state.shouldShow}
-                onHide={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
-                onEntered={()=>this.handleOnEntered()}
+                onHide={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
+                onEntered={() => this.handleOnEntered()}
                 keyboard={this.props.keyboard}
             >
                 <Modal.Header>
@@ -425,7 +426,7 @@ class IntakeEditBase extends Component<Props, State>
                                 <Checkbox
                                     name="FoodBox"
                                     checked={this.state.intakeInfo.FoodBox}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     <span data-l10n-id="en-food-box">Food Box</span>
                                 </Checkbox>
@@ -438,7 +439,7 @@ class IntakeEditBase extends Component<Props, State>
                                 <Checkbox
                                     name="Perishable"
                                     checked={this.state.intakeInfo.Perishable}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     <span data-l10n-id="en-perishables">Perishables</span>
                                 </Checkbox>
@@ -451,7 +452,7 @@ class IntakeEditBase extends Component<Props, State>
                                 <Checkbox
                                     name="Camper"
                                     checked={this.state.intakeInfo.Camper}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     <span data-l10n-id={"en-camper"}>Camper</span>
                                 </Checkbox>
@@ -464,7 +465,7 @@ class IntakeEditBase extends Component<Props, State>
                                 <Checkbox
                                     name="Diaper"
                                     checked={this.state.intakeInfo.Diaper}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 >
                                     <span data-l10n-id={"en-diaper"}>Diaper</span>
                                 </Checkbox>
@@ -480,7 +481,7 @@ class IntakeEditBase extends Component<Props, State>
                                     data-l10n-id="en-notes"
                                     placeholder="Notes"
                                     value={this.state.intakeInfo.Notes}
-                                    onChange={(e)=>this.handleOnChange(e)}
+                                    onChange={(e) => this.handleOnChange(e)}
                                 />
                             </Col>
                         </FormGroup>
@@ -494,7 +495,7 @@ class IntakeEditBase extends Component<Props, State>
                                         backgroundColor="#234AC5"
                                         penColor="white"
                                         canvasProps={{width: 470, height: 200, className: "sig-pad"}}
-                                        onEnd={()=>this.handleSignatureChanged()}
+                                        onEnd={() => this.handleSignatureChanged()}
                                     />
                             </Col>
                         </FormGroup>
@@ -608,14 +609,14 @@ class IntakeEditBase extends Component<Props, State>
                         bsStyle="danger"
                         onClick={() =>
                         {
-                            alert('Delete under construction')
+                            alert('Delete under construction');
                         }}
                     >
                         Delete
                     </Button>
 
                     <Button
-                        onClick={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                        onClick={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
                     >
                         <span data-l10n-id="en-cancel">Cancel</span>
                     </Button>
@@ -628,6 +629,6 @@ class IntakeEditBase extends Component<Props, State>
                     </Button>
                 </Modal.Footer>
             </Modal>
-        )
+        );
     }
 }
