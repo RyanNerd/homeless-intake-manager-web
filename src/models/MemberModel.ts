@@ -39,4 +39,5 @@ export const memberModel =
     Active: true
 };
 
-export type MemberType = Readonly<typeof memberModel>
+export type MemberType = Readonly<typeof memberModel>;
+

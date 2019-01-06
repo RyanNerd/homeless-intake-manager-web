@@ -6,4 +6,4 @@ export const povertyModel =
     Monthly: numberOrNull
 };
 
-export type PovertyType = Readonly<typeof povertyModel>
+export type PovertyType = Readonly<typeof povertyModel>;

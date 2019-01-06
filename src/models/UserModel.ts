@@ -14,4 +14,4 @@ export const userModel =
     Active: true
 };
 
-export type UserType = Readonly<typeof userModel>
+export type UserType = Readonly<typeof userModel>;

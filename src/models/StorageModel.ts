@@ -1,5 +1,5 @@
 const numberOrNull: number | null = null;
-const stringOrNull: string | null = null
+const stringOrNull: string | null = null;
 
 export const storageModel =
 {
@@ -9,4 +9,4 @@ export const storageModel =
     MimeType: stringOrNull
 };
 
-export type StorageType = Readonly<typeof storageModel>
+export type StorageType = Readonly<typeof storageModel>;

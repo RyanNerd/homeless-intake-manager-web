@@ -21,4 +21,4 @@ export const intakeModel =
     IntakeMonth: today.getMonth() + 1,
     IntakeDay: today.getDate()
 };
-export type IntakeType = Readonly<typeof intakeModel>
+export type IntakeType = Readonly<typeof intakeModel>;
