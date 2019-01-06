@@ -7,9 +7,9 @@ import {UserEdit} from "./UserEdit";
 import {userModel, UserType} from "../../models/UserModel";
 import {UserProvider} from "../../providers/UserProvider";
 
-interface Props {
-    userProvider?: UserProvider
-    context?: ContextType
+interface IProps {
+    userProvider?: UserProvider;
+    context?: ContextType;
 }
 
 const userInfoOrNull: UserType | null = null;
@@ -21,7 +21,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const UserPage = (props: Props) => (
+export const UserPage = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <UserPageBase
@@ -36,14 +36,14 @@ export const UserPage = (props: Props) => (
 /**
  * UserPage Class
  */
-class UserPageBase extends Component<Props, State>
+class UserPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
         const context = this.props.context;
         if (context.state.currentUser && context.state.currentUser.IsAdmin) {
@@ -56,7 +56,7 @@ class UserPageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -67,10 +67,10 @@ class UserPageBase extends Component<Props, State>
      *
      * @param {UserType} user
      */
-    onUserSelected(user: UserType)
+    private onUserSelected(user: UserType)
     {
         // user should be passed by value to avoid looking like cancelled updates actually got applied.
-        let userInfo = {...user, Password: null} as UserType;
+        const userInfo = {...user, Password: null} as UserType;
         this.setState({userInfo: userInfo, showUserEdit: true});
     }
 
@@ -80,7 +80,7 @@ class UserPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    addUser(e: MouseEvent<Button>)
+    private addUser(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
@@ -91,10 +91,10 @@ class UserPageBase extends Component<Props, State>
     /**
      * Called when the UserGrid needs a refresh.
      */
-    populateUserGrid()
+    private populateUserGrid()
     {
         this.props.userProvider.read()
-        .then((response)=>
+        .then((response) =>
         {
             if (response.success) {
                 this.setState({users: response.data});
@@ -102,7 +102,7 @@ class UserPageBase extends Component<Props, State>
                 this.onError(response);
             }
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             this.onError(error);
         });
@@ -113,7 +113,7 @@ class UserPageBase extends Component<Props, State>
      *
      * @param {boolean} shouldRefresh True if changes were made in the modal and the grid should refresh
      */
-    handleUserEditClose(shouldRefresh: boolean)
+    private handleUserEditClose(shouldRefresh: boolean)
     {
         this.setState({showUserEdit: false});
 
@@ -122,7 +122,7 @@ class UserPageBase extends Component<Props, State>
         }
     }
 
-    render()
+    public render()
     {
         return(
             <div style={{marginTop: "25px", marginLeft: "15px", marginBottom: "25px", marginRight: "15px"}}>
@@ -130,13 +130,13 @@ class UserPageBase extends Component<Props, State>
                 {this.state.users &&
                     <UserGrid
                         users={this.state.users}
-                        onUserSelected={(user: UserType)=>this.onUserSelected(user)}
+                        onUserSelected={(user: UserType) => this.onUserSelected(user)}
                     />
                 }
 
                 <br/>
 
-                <Button onClick={(e)=>this.addUser(e)}
+                <Button onClick={(e) => this.addUser(e)}
                 >
                     Add User
                 </Button>
@@ -144,11 +144,11 @@ class UserPageBase extends Component<Props, State>
                 {/* UserEdit Modal */}
                 <UserEdit
                     show={this.state.showUserEdit}
-                    onHide={(shouldRefresh: boolean)=>this.handleUserEditClose(shouldRefresh)}
+                    onHide={(shouldRefresh: boolean) => this.handleUserEditClose(shouldRefresh)}
                     keyboard={true}
                     userInfo={this.state.userInfo}
                 />
             </div>
-        )
+        );
     }
 }
