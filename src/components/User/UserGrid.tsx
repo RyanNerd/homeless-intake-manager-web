@@ -7,13 +7,13 @@ import {
 } from 'react-bootstrap';
 import {UserType} from "../../models/UserModel";
 
-interface Props {
-    context?: ContextType
-    onUserSelected: Function
-    users: UserType[]
+interface IProps {
+    context?: ContextType;
+    onUserSelected: (userInfo: UserType) => void;
+    users: UserType[];
 }
 
-export const UserGrid = (props: Props) => (
+export const UserGrid = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <UserGridBase
@@ -27,7 +27,7 @@ export const UserGrid = (props: Props) => (
 /**
  * UserGrid Class
  */
-class UserGridBase extends Component<Props, {}>
+class UserGridBase extends Component<IProps, {}>
 {
     /**
      * Handle when a user is selected from the grid
@@ -35,22 +35,22 @@ class UserGridBase extends Component<Props, {}>
      * @param {MouseEvent} e
      * @param {UserType} user
      */
-    handleUserSelected(e: MouseEvent<Button>, user: UserType)
+    private handleUserSelected(e: MouseEvent<Button>, user: UserType)
     {
         e.preventDefault();
         this.props.onUserSelected(user);
     }
 
-    render()
+    public render()
     {
         const UserRow = (user: UserType) =>
         {
-            let rowClassName="user-grid-row";
-            let buttonClassName="user-grid-button";
+            let rowClassName = "user-grid-row";
+            let buttonClassName = "user-grid-button";
 
             if (!user.Active) {
-                rowClassName="user-grid-row-inactive";
-                buttonClassName="user-grid-button-inactive";
+                rowClassName = "user-grid-row-inactive";
+                buttonClassName = "user-grid-button-inactive";
             }
 
             return (
@@ -63,7 +63,7 @@ class UserGridBase extends Component<Props, {}>
                         <Button
                             id={"user-grid-button-" + user.Id}
                             className={buttonClassName}
-                            onClick={(e: MouseEvent<Button>)=>{this.handleUserSelected(e, user)}}
+                            onClick={(e: MouseEvent<Button>) => {this.handleUserSelected(e, user); }}
                         >
                             Select
                         </Button>
@@ -73,7 +73,7 @@ class UserGridBase extends Component<Props, {}>
                     <td>{user.Email}</td>
                     <td>{user.UserName}</td>
                 </tr>
-            )
+            );
         };
 
         if (!this.props.users) {
