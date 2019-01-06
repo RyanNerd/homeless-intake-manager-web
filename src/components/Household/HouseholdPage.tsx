@@ -23,14 +23,14 @@ import {StateDropdown} from "../StateDropdown";
 import {CountyDropdown} from "../CountyDropdown";
 import {MemberProvider} from "../../providers/MemberProvider";
 import {HouseholdProvider} from "../../providers/HouseholdProvider";
-import NewWindow  from 'react-new-window';
+import NewWindow from 'react-new-window';
 import {MemberBadge} from "../Member/MemberBadge";
 import {INodeListOf, ITarget} from "../../typings/HtmlInterfaces";
 
-interface Props {
-    context: ContextType
-    householdProvider: HouseholdProvider
-    memberProvider: MemberProvider
+interface IProps {
+    context: ContextType;
+    householdProvider: HouseholdProvider;
+    memberProvider: MemberProvider;
 }
 
 const memberInfoOrNull: MemberType | null = null;
@@ -65,26 +65,26 @@ export const HouseholdPage = (props?: any) => (
 /**
  * HouseholdPage class - Household Edit Page
  */
-class HouseholdPageBase extends Component<Props, State>
+class HouseholdPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle Hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
         // Subscribe to store.context.currentHousehold state changes forcing save if IsDemo is updated
         this.householdUpdated = this.householdUpdated.bind(this);
         this.props.context.subscribe('currentHousehold', this.householdUpdated);
     }
 
-     /**
-     * Lifecycle hook - componentDidUpdate
+    /**
+     * Lifecycle hook - componentDidUpadte
      *
-     * @param {Props} prevProps
+     * @param {IProps} prevProps
      */
-    componentDidUpdate(prevProps: Props)
+    public componentDidUpdate(prevProps: IProps)
     {
         const context = this.props.context;
 
@@ -99,7 +99,7 @@ class HouseholdPageBase extends Component<Props, State>
 
             // Work around for React stupidity
             if (context.state.currentHousehold.Id === null) {
-                let named = document.querySelectorAll('[name]') as INodeListOf;
+                const named = document.querySelectorAll('[name]') as INodeListOf;
                 for (const namedElement of named) {
                     if (namedElement.value) {
                         namedElement.value = context.state.currentHousehold[namedElement.name];
@@ -114,7 +114,7 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string): void
+    private onError(error: object | string): void
     {
         this.props.context.methods.setError(error);
     }
@@ -122,7 +122,7 @@ class HouseholdPageBase extends Component<Props, State>
     /**
      * Called when the global currentHousehold is changed.
      */
-    householdUpdated()
+    private householdUpdated()
     {
         // If autoSave is true then invoke the handleSave event.
         if (this.state.autoSave) {
@@ -135,12 +135,12 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleOnChange(e: FormEvent<FormControl>)
+    private handleOnChange(e: FormEvent<FormControl>)
     {
         e.preventDefault();
         const context = this.props.context;
         const methods = context.methods;
-        let householdInfo = {...context.state.currentHousehold};
+        const householdInfo = {...context.state.currentHousehold};
 
         const target = e.target as ITarget;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -155,11 +155,11 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {string} stateCode
      */
-    handleStateCodeChanged(stateCode: string)
+    private handleStateCodeChanged(stateCode: string)
     {
         const context = this.props.context;
         const methods = context.methods;
-        let householdInfo = {...context.state.currentHousehold};
+        const householdInfo = {...context.state.currentHousehold};
         householdInfo.State = stateCode;
         methods.setCurrentHousehold(householdInfo);
     }
@@ -169,11 +169,11 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {string} countyCode
      */
-    handleCountyCodeChanged(countyCode: string)
+    private handleCountyCodeChanged(countyCode: string)
     {
         const context = this.props.context;
         const methods = context.methods;
-        let householdInfo = {...context.state.currentHousehold};
+        const householdInfo = {...context.state.currentHousehold};
         householdInfo.County = countyCode;
         methods.setCurrentHousehold(householdInfo);
     }
@@ -184,7 +184,7 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {int} id The Member PK
      */
-    handleMemberSelected(id: number)
+    private handleMemberSelected(id: number)
     {
         this.setState({selectedMemberInfo: getRecordById(id, this.state.members) as MemberType, showMemberEdit: true});
     }
@@ -194,7 +194,7 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {object} memberInfo
      */
-    handleMemberEditClose(memberInfo: MemberType)
+    private handleMemberEditClose(memberInfo: MemberType)
     {
         // No longer show the modal.
         this.setState({showMemberEdit: false});
@@ -215,14 +215,14 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleAddMember(e: MouseEvent<Button>)
+    private handleAddMember(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
         const context = this.props.context;
 
         // Set the selectedMember to an empty memberModel and bring up the MemberEdit modal form.
-        let newMember = {...memberModel};
+        const newMember = {...memberModel};
         newMember.HouseholdId = context.state.currentHousehold.Id;
         this.setState({selectedMemberInfo: {...newMember}, showMemberEdit: true});
     }
@@ -232,18 +232,18 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleDemo(e: MouseEvent<Button>)
+    private handleDemo(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
         // Get a copy of the currentHousehold object and toggle the IsDemo property.
         const context = this.props.context;
         const methods = context.methods;
-        let householdInfo = {...context.state.currentHousehold};
+        const householdInfo = {...context.state.currentHousehold};
         householdInfo.IsDemo = !householdInfo.IsDemo;
 
         // Change the state of autoSave to true and then update the currentHousehold (which will trigger handleSave)
-        this.setState({autoSave: true},()=>{methods.setCurrentHousehold(householdInfo)})
+        this.setState({autoSave: true}, () => {methods.setCurrentHousehold(householdInfo); });
     }
 
     /**
@@ -251,7 +251,7 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {int} householdId
      */
-    populateMemberGrid(householdId: number)
+    private populateMemberGrid(householdId: number)
     {
         // Sanity check
         if (householdId === 0) {
@@ -277,7 +277,7 @@ class HouseholdPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} [e]
      */
-    handleSave(e?: MouseEvent<Button>)
+    private handleSave(e?: MouseEvent<Button>)
     {
         if (e) {
             e.preventDefault();
@@ -285,7 +285,7 @@ class HouseholdPageBase extends Component<Props, State>
 
         const context = this.props.context;
         const methods = context.methods;
-        let currentHousehold = {...context.state.currentHousehold};
+        const currentHousehold = {...context.state.currentHousehold};
 
         // If household is homeless then make County null
         if (currentHousehold.Homeless) {
@@ -328,7 +328,7 @@ class HouseholdPageBase extends Component<Props, State>
         }
     }
 
-    render()
+    public render()
     {
         const context = this.props.context;
 
@@ -341,7 +341,7 @@ class HouseholdPageBase extends Component<Props, State>
             <div>
                 {this.state.showMemberBadge &&
                     <NewWindow
-                        onUnload={()=>{this.setState({showMemberBadge: false})}}
+                        onUnload={() => {this.setState({showMemberBadge: false}); }}
                         title="Print Member Badge"
                     >
                         <MemberBadge
@@ -356,7 +356,7 @@ class HouseholdPageBase extends Component<Props, State>
                     {/* MemberEdit Modal */}
                     <MemberEdit
                         show={this.state.showMemberEdit}
-                        onHide={(memberInfo: MemberType)=>this.handleMemberEditClose(memberInfo)}
+                        onHide={(memberInfo: MemberType) => this.handleMemberEditClose(memberInfo)}
                         keyboard={false}
                         memberInfo={this.state.selectedMemberInfo}
                     />
@@ -364,7 +364,7 @@ class HouseholdPageBase extends Component<Props, State>
                     {this.state.showSaved &&
                         <ToasterAlert
                             timeout={3000}
-                            onDismiss={()=>{this.setState({showSaved: false})}}
+                            onDismiss={() => {this.setState({showSaved: false}); }}
                         >
                             <b>Household Updated</b>
                         </ToasterAlert>
@@ -380,9 +380,9 @@ class HouseholdPageBase extends Component<Props, State>
                                     placeholder="Household Name"
                                     maxLength={45}
                                     value={context.state.currentHousehold.HouseholdName}
-                                    onChange={(e)=>this.handleOnChange(e)}
-                                    onFocus={()=>this.setState({householdNameHasFocus: true})}
-                                    onBlur={()=>this.setState({householdNameHasFocus: false})}
+                                    onChange={(e) => this.handleOnChange(e)}
+                                    onFocus={() => this.setState({householdNameHasFocus: true})}
+                                    onBlur={() => this.setState({householdNameHasFocus: false})}
                                 />
                                 {this.state.householdNameHasFocus && !context.state.currentHousehold.HouseholdName &&
                                     <HelpBlock>Usually the last name of the head of household</HelpBlock>
@@ -412,7 +412,7 @@ class HouseholdPageBase extends Component<Props, State>
                                 <StateDropdown
                                     className="form-control"
                                     selectedState={context.state.currentHousehold.State}
-                                    onSelected={(stateCode: string)=>this.handleStateCodeChanged(stateCode)}
+                                    onSelected={(stateCode: string) => this.handleStateCodeChanged(stateCode)}
                                 />
                                 <FormControl
                                     name={"Zip"}
@@ -434,7 +434,7 @@ class HouseholdPageBase extends Component<Props, State>
                                     className="form-control"
                                     selectedCounty={context.state.currentHousehold.County}
                                     stateCode={context.state.currentHousehold.State}
-                                    onSelected={(countyCode: string)=>this.handleCountyCodeChanged(countyCode)}
+                                    onSelected={(countyCode: string) => this.handleCountyCodeChanged(countyCode)}
                                 />
                             </Col>
                         </FormGroup>
@@ -587,7 +587,7 @@ class HouseholdPageBase extends Component<Props, State>
                                     <Button
                                         bsStyle="primary"
                                         disabled={!context.state.currentHousehold.HouseholdName}
-                                        onClick={(e)=>this.handleSave(e)}
+                                        onClick={(e) => this.handleSave(e)}
                                     >
                                         Save
                                     </Button>
@@ -595,7 +595,7 @@ class HouseholdPageBase extends Component<Props, State>
                                     <Button
                                         bsStyle="primary"
                                         disabled={!context.state.currentHousehold.HouseholdName}
-                                        onClick={(e)=>this.handleSave(e)}
+                                        onClick={(e) => this.handleSave(e)}
                                     >
                                         Create New Household
                                     </Button>
@@ -611,7 +611,7 @@ class HouseholdPageBase extends Component<Props, State>
                                 <Col sm={6}>
                                     <Button
                                         bsStyle="danger"
-                                        onClick={(e)=>this.handleDemo(e)}
+                                        onClick={(e) => this.handleDemo(e)}
                                         disabled={!context.state.currentHousehold.HouseholdName}
                                     >
                                         {context.state.currentHousehold.IsDemo ? 'Remove' : 'Make'} Household Demo
@@ -625,7 +625,7 @@ class HouseholdPageBase extends Component<Props, State>
                         <Col componentClass={ControlLabel} md={3}>
                             <MemberPanel/>
                             <Button
-                                onClick={()=>{this.setState({showMemberBadge: true})}}
+                                onClick={() => {this.setState({showMemberBadge: true}); }}
                             >
                                 Print Badge
                             </Button>
@@ -653,12 +653,11 @@ class HouseholdPageBase extends Component<Props, State>
                         {context.state.currentHousehold.Id &&
                             <Button
                                 bsStyle="primary"
-                                onClick={(e:MouseEvent<Button>)=>this.handleAddMember(e)}
+                                onClick={(e: MouseEvent<Button>) => this.handleAddMember(e)}
                             >
                                 Add Member
                             </Button>
                         }
-
 
                     </Col>
                 </Form>

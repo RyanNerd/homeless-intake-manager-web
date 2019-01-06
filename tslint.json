@@ -16,7 +16,8 @@
         "quotemark": [false],
         "interface-over-type-literal": false,
         "no-shadowed-variable": false,
-        "object-literal-shorthand": false
+        "object-literal-shorthand": false,
+        "object-literal-sort-keys": false
     },
     "rulesDirectory": []
 }
