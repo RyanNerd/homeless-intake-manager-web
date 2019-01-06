@@ -10,12 +10,12 @@ import {PovertyProvider} from "../../providers/PovertyProvider";
 import {IDocument} from "../../typings/HtmlInterfaces";
 import {PovertyType} from "../../models/PovertyModel";
 
-interface Props {
+interface IProps {
     povertyProvider?: PovertyProvider;
     householdSize: number;
     language: string;
     tabIndex?: number;
-    context?: ContextType
+    context?: ContextType;
 }
 
 const stringOrNull: null | string = null;
@@ -23,9 +23,9 @@ const initialState = {
     povertyGuidelinesTitle: "Federal Poverty Income Guidelines",
     language: stringOrNull
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
-export const PovertyPanel = (props: Props) => (
+export const PovertyPanel = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <PovertyPanelBase
@@ -40,14 +40,14 @@ export const PovertyPanel = (props: Props) => (
 /**
  * PovertyPanel Class
  */
-class PovertyPanelBase extends Component<Props, State>
+class PovertyPanelBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidUpdate
      */
-    componentDidUpdate()
+    public componentDidUpdate()
     {
         const language = this.props.language;
         if (language !== this.state.language) {
@@ -72,7 +72,7 @@ class PovertyPanelBase extends Component<Props, State>
     /**
      * Lifecycle hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
         const context  = this.props.context;
         const methods = this.props.context.methods;
@@ -99,12 +99,12 @@ class PovertyPanelBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
 
-    render()
+    public render()
     {
         const context = this.props.context;
 
@@ -114,15 +114,20 @@ class PovertyPanelBase extends Component<Props, State>
 
             // If householdSize is given and it does not match the row.Id then ignore it.
             if (this.props.householdSize && this.props.householdSize === row.Id) {
-                style = {backgroundColor: "lightblue"}
+                style = {backgroundColor: "lightblue"};
             }
 
             return (
-                <tr style={style} key={'poverty-grid-row-' + row.Id} className={"poverty-grid-row"} id={'poverty-grid-row-' + row.Id}>
+                <tr
+                    style={style}
+                    key={'poverty-grid-row-' + row.Id}
+                    className={"poverty-grid-row"}
+                    id={'poverty-grid-row-' + row.Id}
+                >
                     <td>{row.Id}</td>
                     <td>{row.Monthly}</td>
                 </tr>
-            )
+            );
         };
 
         return(
@@ -150,6 +155,6 @@ class PovertyPanelBase extends Component<Props, State>
                     </Panel.Collapse>
                 </Panel.Body>
             </Panel>
-        )
+        );
     }
 }
