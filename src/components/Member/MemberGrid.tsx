@@ -9,9 +9,9 @@ import {MemberType} from "../../models/MemberModel";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface Props {
-    onMemberSelected: Function
-    members: MemberType[]
+interface IProps {
+    onMemberSelected: (id: number) => void;
+    members: MemberType[];
 }
 
 const initialMembers: MemberType[] | null = null;
@@ -21,21 +21,21 @@ const initialState = {
         sortBy: 'LastName',
         arrow: "↓"
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 /**
  * MemberGrid class
  */
-export class MemberGrid extends Component<Props, State>
+export class MemberGrid extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - componentDidUpdate
      *
      * @param {object} prevProps
      */
-    componentDidUpdate(prevProps: Props)
+    public componentDidUpdate(prevProps: IProps)
     {
         // Is this the initial assignment of member data?
         if (this.state.members === null && this.props.members) {
@@ -62,7 +62,7 @@ export class MemberGrid extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {int} id
      */
-    handleMemberSelected(e: MouseEvent<Button>, id: number)
+    private handleMemberSelected(e: MouseEvent<Button>, id: number)
     {
         e.preventDefault();
 
@@ -75,7 +75,7 @@ export class MemberGrid extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {string} columnName Name of the column in the array to sort by.
      */
-    handleSortBy(e: MouseEvent<HTMLTableHeaderCellElement>, columnName: string)
+    private handleSortBy(e: MouseEvent<HTMLTableHeaderCellElement>, columnName: string)
     {
         e.preventDefault();
 
@@ -84,29 +84,38 @@ export class MemberGrid extends Component<Props, State>
 
         // Is a new column selected? If so then re-sort the array, otherwise reverse the array.
         if (this.state.sortBy !== columnName) {
-            this.setState({members: sortByColumnName(this.state.members, columnName) as MemberType[], sortBy: columnName, sortDirection: 1, arrow: "↑"});
+            this.setState({
+                members: sortByColumnName(this.state.members, columnName) as MemberType[],
+                sortBy: columnName,
+                sortDirection: 1,
+                arrow: "↑"
+            });
         } else {
             sortDirection = 1 - sortDirection;
-            this.setState({members: this.state.members.reverse(), sortDirection: sortDirection, arrow: sortDirection ? "↑" : "↓"});
+            this.setState({
+                members: this.state.members.reverse(),
+                sortDirection: sortDirection,
+                arrow: sortDirection ? "↑" : "↓"
+            });
         }
     }
 
-    render()
+    public render()
     {
         const MemberRow = (member: MemberType) =>
         {
-            let memberId = parseInt(member.Id).pad(BADGE_LENGTH_MAX);
-            const birthYear  = member.BirthYear  ? parseInt(member.BirthYear).pad(4) : '';
-            const birthMonth = member.BirthMonth ? parseInt(member.BirthMonth).pad(2) : '';
-            const birthDay   = member.BirthDay   ? parseInt(member.BirthDay).pad(2) : '';
+            const memberId = parseInt(member.Id, 10).pad(BADGE_LENGTH_MAX);
+            const birthYear  = member.BirthYear  ? parseInt(member.BirthYear, 10).pad(4) : '';
+            const birthMonth = member.BirthMonth ? parseInt(member.BirthMonth, 10).pad(2) : '';
+            const birthDay   = member.BirthDay   ? parseInt(member.BirthDay, 10).pad(2) : '';
             const dob = birthYear + '-' + birthMonth + '-' + birthDay;
 
-            let rowClassName="member-grid-row";
-            let buttonClassName="member-grid-button";
+            let rowClassName = "member-grid-row";
+            let buttonClassName = "member-grid-button";
 
             if (!member.Active) {
-                rowClassName="member-grid-row-inactive";
-                buttonClassName="member-grid-button-inactive";
+                rowClassName = "member-grid-row-inactive";
+                buttonClassName = "member-grid-button-inactive";
             }
 
             return (
@@ -119,7 +128,7 @@ export class MemberGrid extends Component<Props, State>
                         <Button
                             id={"member-grid-button-" + member.Id}
                             className={buttonClassName}
-                            onClick={(e: MouseEvent<Button>)=>{this.handleMemberSelected(e, member.Id)}}
+                            onClick={(e: MouseEvent<Button>) => {this.handleMemberSelected(e, member.Id); }}
                         >
                             Select
                         </Button>
@@ -129,7 +138,7 @@ export class MemberGrid extends Component<Props, State>
                     <td>{member.LastName}</td>
                     <td>{dob}</td>
                 </tr>
-            )
+            );
         };
 
         if (!this.state.members) {
@@ -142,7 +151,7 @@ export class MemberGrid extends Component<Props, State>
                     <tr>
                         <th/>
                         <th
-                            onClick={(e)=>this.handleSortBy(e, 'Id')}
+                            onClick={(e) => this.handleSortBy(e, 'Id')}
                             className="member-grid-header"
                         >
                             {this.state.sortBy === 'Id' ?
@@ -151,7 +160,7 @@ export class MemberGrid extends Component<Props, State>
                             }
                         </th>
                         <th
-                            onClick={(e)=>this.handleSortBy(e, 'FirstName')}
+                            onClick={(e) => this.handleSortBy(e, 'FirstName')}
                             className="member-grid-header"
                         >
                             {this.state.sortBy === 'FirstName' ?
@@ -160,7 +169,7 @@ export class MemberGrid extends Component<Props, State>
                             }
                         </th>
                         <th
-                            onClick={(e)=>this.handleSortBy(e, 'LastName')}
+                            onClick={(e) => this.handleSortBy(e, 'LastName')}
                             className="member-grid-header"
                         >
                             {this.state.sortBy === 'LastName' ?
@@ -169,7 +178,7 @@ export class MemberGrid extends Component<Props, State>
                             }
                         </th>
                         <th
-                            onClick={(e)=>this.handleSortBy(e, 'BirthYear')}
+                            onClick={(e) => this.handleSortBy(e, 'BirthYear')}
                             className="member-grid-header"
                         >
                             {this.state.sortBy === 'BirthYear' ?
