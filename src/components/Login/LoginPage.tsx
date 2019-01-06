@@ -17,9 +17,9 @@ import {hasWhitespace} from "../../utils/validation";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface Props {
-    onSignedIn: Function
-    context: ContextType
+interface IProps {
+    onSignedIn: () => void;
+    context: ContextType;
 }
 
 type ValidationType = "error" | "warning" | "sucess" | null | undefined;
@@ -32,7 +32,7 @@ const initialState = {
         password: '',
         email: ''
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 const userProvider = new UserProvider();
 
@@ -50,29 +50,29 @@ export const LoginPage = (props?: any) => (
 /**
  * LoginPage Class
  */
-class LoginPageBase extends Component<Props, State>
+class LoginPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle Hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
-        let emailText = document.getElementById('login-email') as HTMLInputElement;
+        const emailText = document.getElementById('login-email') as HTMLInputElement;
         emailText.focus();
     }
 
     /**
      * Lifecycle hook - componentDidUpdate
      */
-    componentDidUpdate()
+    public componentDidUpdate()
     {
         // Are we resetting the password?
         if (this.state.passwordReset) {
             // Is the new password unpopulated?
             if (this.state.newPassword.length === 0) {
-                let newPassword = document.getElementById('new-password');
+                const newPassword = document.getElementById('new-password');
                 // Sanity check - set focus to new password field
                 if (newPassword) {
                     newPassword.focus();
@@ -86,7 +86,7 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -96,7 +96,7 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {UserType} userInfo
      */
-    handleSignedIn(userInfo: UserType)
+    private handleSignedIn(userInfo: UserType)
     {
         // Let the parent component know login is successful
         this.props.onSignedIn();
@@ -110,13 +110,13 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleLoginClick(e: MouseEvent<Button>)
+    private handleLoginClick(e: MouseEvent<Button>)
     {
         this.setState({showBadCredentials: false});
 
         e.preventDefault();
 
-        let credentials =
+        const credentials =
         {
             Email: this.state.email,
             Password: this.state.password
@@ -127,7 +127,7 @@ class LoginPageBase extends Component<Props, State>
         {
             if (response.status === 200 && response.success) {
                 if (response.data.MustResetPassword) {
-                    this.setState({passwordReset: true})
+                    this.setState({passwordReset: true});
                 } else {
                     this.handleSignedIn(response.data);
                 }
@@ -146,7 +146,7 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleEmailChange(e: FormEvent<FormControl>)
+    private handleEmailChange(e: FormEvent<FormControl>)
     {
         const target = e.target as ITarget;
         this.setState({email: target.value});
@@ -157,7 +157,7 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handlePasswordChange(e: FormEvent<FormControl>)
+    private handlePasswordChange(e: FormEvent<FormControl>)
     {
         const target = e.target as ITarget;
         this.setState({password: target.value});
@@ -168,12 +168,12 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {KeyboardEvent} e
      */
-    handlePasswordKeyUp(e: KeyboardEvent<FormControl>)
+    private handlePasswordKeyUp(e: KeyboardEvent<FormControl>)
     {
         // Did user press Enter while entering password?
         if (e.key === 'Enter') {
             // Simulate a click on the login button.
-            let loginButton = document.getElementById('login-button') as HTMLButtonElement;
+            const loginButton = document.getElementById('login-button') as HTMLButtonElement;
             loginButton.click();
         }
     }
@@ -183,11 +183,11 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handlePasswordReset(e: MouseEvent<Button>)
+    private handlePasswordReset(e: MouseEvent<Button>)
     {
         e.preventDefault();
 
-        let credentials =
+        const credentials =
         {
             Email: this.state.email,
             Password: this.state.password,
@@ -203,11 +203,11 @@ class LoginPageBase extends Component<Props, State>
                 this.setState({showBadCredentials: true, passwordReset: false});
             }
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             this.onError(error);
             this.setState({passwordReset: false});
-        })
+        });
     }
 
     /**
@@ -215,10 +215,10 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleNewPasswordChange(e: FormEvent<FormControl>)
+    private handleNewPasswordChange(e: FormEvent<FormControl>)
     {
         const target = e.target as ITarget;
-        this.setState({newPassword: target.value}, ()=>
+        this.setState({newPassword: target.value}, () =>
         {
             this.setState({validPassword: this.validPasswordState()});
         });
@@ -229,12 +229,12 @@ class LoginPageBase extends Component<Props, State>
      *
      * @param {KeyboardEvent} e
      */
-    handleNewPasswordKeyUp(e: KeyboardEvent<FormControl>)
+    private handleNewPasswordKeyUp(e: KeyboardEvent<FormControl>)
     {
         // Did user presses Enter while entering new password?
         if (e.key === 'Enter') {
             // Simulate a click on the password reset button.
-            let passwordResetButton = document.getElementById('password-reset-button') as HTMLButtonElement;
+            const passwordResetButton = document.getElementById('password-reset-button') as HTMLButtonElement;
             passwordResetButton.click();
         }
     }
@@ -244,9 +244,9 @@ class LoginPageBase extends Component<Props, State>
      *
      * @return {string | null}
      */
-    validPasswordState(): 'error' | null
+    private validPasswordState(): 'error' | null
     {
-        if(this.state.newPassword.length < 8) {
+        if (this.state.newPassword.length < 8) {
             return 'error';
         }
 
@@ -256,7 +256,7 @@ class LoginPageBase extends Component<Props, State>
         return null;
     }
 
-    render()
+    public render()
     {
         if (!this.state.passwordReset) {
             return (
@@ -276,7 +276,7 @@ class LoginPageBase extends Component<Props, State>
                             <FormControl
                                 type="text"
                                 placeholder="Email or Nick Name"
-                                onChange={(e)=>this.handleEmailChange(e)}
+                                onChange={(e) => this.handleEmailChange(e)}
                                 value={this.state.email}
                             />
                         </Col>
@@ -290,8 +290,8 @@ class LoginPageBase extends Component<Props, State>
                             <FormControl
                                 type="password"
                                 value={this.state.password}
-                                onChange={(e)=>this.handlePasswordChange(e)}
-                                onKeyUp={(e)=>this.handlePasswordKeyUp(e)}
+                                onChange={(e) => this.handlePasswordChange(e)}
+                                onKeyUp={(e) => this.handlePasswordKeyUp(e)}
                             />
                         </Col>
                     </FormGroup>
@@ -300,14 +300,14 @@ class LoginPageBase extends Component<Props, State>
                         <Col componentClass={ControlLabel} sm={2}/>
                         <Button
                             id="login-button"
-                            onClick={(e)=>this.handleLoginClick(e)}
+                            onClick={(e) => this.handleLoginClick(e)}
                             disabled={!this.state.email || !this.state.password}
                         >
                             Login
                         </Button>
                     </FormGroup>
                 </Form>
-            )
+            );
         } else {
             return (
                 <Form horizontal>
@@ -328,8 +328,8 @@ class LoginPageBase extends Component<Props, State>
                             <FormControl
                                 type="password"
                                 value={this.state.newPassword}
-                                onChange={(e)=>this.handleNewPasswordChange(e)}
-                                onKeyUp={(e)=>this.handleNewPasswordKeyUp(e)}
+                                onChange={(e) => this.handleNewPasswordChange(e)}
+                                onKeyUp={(e) => this.handleNewPasswordKeyUp(e)}
                             />
                         </Col>
                         {this.state.validPassword &&
@@ -348,7 +348,7 @@ class LoginPageBase extends Component<Props, State>
                         </Button>
                     </FormGroup>
                 </Form>
-            )
+            );
         }
     }
 }
