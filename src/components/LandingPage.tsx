@@ -19,7 +19,7 @@ import {HouseholdPage} from "./Household/HouseholdPage";
 import { ContextType } from "./StoreContext";
 import pantry from "./../images/pantry.png";
 
-interface Props {
+interface IProps {
     context?: ContextType;
     isChrome: boolean;
 }
@@ -29,14 +29,14 @@ const organizationName = process.env.ORGANIZATION_NAME;
 /**
  * 𐐃𐑊 𐐷𐐳𐑉 𐐽𐐬𐐩𐑅𐑆 𐐸𐐰𐑂 𐐿𐐲𐑌𐑅𐐹𐐴𐐲𐑉𐐼 𐐻𐐭 𐐺𐑉𐐮𐑍 𐐷𐐭 𐐻𐐭 𐑄𐐮𐑅 𐑂𐐯𐑉𐐨 𐑋𐐬𐑋𐐲𐑌𐐻 𐐮𐑌 𐐻𐐴𐑋.
  */
-const notChromeAlert =(
+const notChromeAlert = (
     <ToasterAlert timeout={15000} bsStyle={"warning"} style={{textAlign: "center"}}>
         <p>Chrome browser is recommended</p>
         <p>You are using a different browser and may experience unexpected behavior</p>
     </ToasterAlert>
 );
 
-export const LandingPage = (props: Props) => (
+export const LandingPage = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <LandingPageBase
@@ -51,12 +51,13 @@ export const LandingPage = (props: Props) => (
  * LandingPage Class
  *
  * TODO: Report tab does nothing -- it really should do something.
- * TODO: Make barcode genration internal instead of an external API call: https://github.com/metafloor/bwip-js#browser-usage
+ * TODO: Make barcode generation internal instead of an external API call:
+ *       https://github.com/metafloor/bwip-js#browser-usage
  * TODO: Allow users that are admins to physically delete some records (intake, member, household).
  */
-class LandingPageBase extends Component<Props, {}>
+class LandingPageBase extends Component<IProps, {}>
 {
-    state = {
+    public readonly state = {
         key: 'login' // Starting tab
     };
 
@@ -66,12 +67,12 @@ class LandingPageBase extends Component<Props, {}>
      *
      * @see https://react-bootstrap.github.io/components/tabs/#tabs-props
      */
-    handleSelect(key: SyntheticEvent<TabContainer>)
+    private handleSelect(key: SyntheticEvent<TabContainer>)
     {
         this.setState({key: key});
     }
 
-    render()
+    public render()
     {
         const context = this.props.context;
 
@@ -80,7 +81,9 @@ class LandingPageBase extends Component<Props, {}>
                 <PageHeader style={{textAlign: "center"}}>{organizationName} Intake</PageHeader>
 
                 {!context.state.currentUser &&
-                    <div style={{textAlign: "center", paddingBottom: "10px"}}><img src={pantry} height={100} width={450}/></div>
+                    <div style={{textAlign: "center", paddingBottom: "10px"}}>
+                        <img alt="" src={pantry} height={100} width={450}/>
+                    </div>
                 }
 
                 {/* If the browser being used is NOT Chrome then alert the user that there may be issues */}
@@ -108,7 +111,7 @@ class LandingPageBase extends Component<Props, {}>
                                 <Col sm={12}>
                                     <Tab.Content animation style={{marginTop: "10px"}}>
                                         <Tab.Pane eventKey="login">
-                                            <LoginPage onSignedIn={()=>this.setState({key: 'search'})}/>
+                                            <LoginPage onSignedIn={() => this.setState({key: 'search'})}/>
                                         </Tab.Pane>
                                     </Tab.Content>
                                 </Col>
@@ -202,14 +205,23 @@ class LandingPageBase extends Component<Props, {}>
                     )}
 
                     {context.state.currentUser &&
-                        <p style={{fontSize: "x-small"}}><span style={{fontWeight: "bold"}}>Staff:</span> {context.state.currentUser.LastName}, {context.state.currentUser.FirstName}</p>
+                        <p style={{fontSize: "x-small"}}>
+                            <span style={{fontWeight: "bold"}}>
+                                Staff:
+                            </span> {context.state.currentUser.LastName}, {context.state.currentUser.FirstName}
+                        </p>
                     }
                 </Fragment>
 
                 <p style={{fontSize: "xx-small", paddingTop: "15px"}}>
-                    © 2018 Digital Codex <a href={"https://github.com/RyanNerd/pantry-intake-web/issues/new"} target="_blank" rel="noreferrer">Report issues</a>
+                    © 2018 Digital Codex <a
+                        href={"https://github.com/RyanNerd/pantry-intake-web/issues/new"}
+                        target="_blank"
+                        rel="noreferrer">
+                    Report issues
+                </a>
                 </p>
             </Fragment>
-        )
+        );
     }
 }
