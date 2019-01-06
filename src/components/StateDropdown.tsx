@@ -2,10 +2,10 @@ import * as React from "react";
 import {ChangeEvent, Component} from "react";
 import {statesModel} from "../models/StatesModel";
 
-interface Props {
-    selectedState: string
-    onSelected: Function
-    className: string
+interface IProps {
+    selectedState: string;
+    onSelected: (stateCode: string) => void;
+    className: string;
 }
 
 const initialState = {
@@ -16,18 +16,18 @@ type State = Readonly<typeof initialState>;
 /**
  * StateDropdown Class
  */
-export class StateDropdown extends Component<Props, State>
+export class StateDropdown extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
      *
-     * @param {Props} nextProps
+     * @param {IProps} nextProps
      * @param {State} prevState
      * @return {State | null}
      */
-    static getDerivedStateFromProps(nextProps: Props, prevState: State): State | null
+    public static getDerivedStateFromProps(nextProps: IProps, prevState: State): State | null
     {
         if (nextProps.selectedState !== prevState.selectedState) {
             return {selectedState: nextProps.selectedState};
@@ -41,7 +41,7 @@ export class StateDropdown extends Component<Props, State>
      *
      * @param {ChangeEvent} e
      */
-    handleStateSelected(e: ChangeEvent<HTMLSelectElement>)
+    private handleStateSelected(e: ChangeEvent<HTMLSelectElement>)
     {
         const target = e.target;
         const stateCode = target.value;
@@ -49,13 +49,13 @@ export class StateDropdown extends Component<Props, State>
         this.props.onSelected(stateCode);
     }
 
-    render()
+    public render()
     {
         return (
             <select
                 className={this.props.className}
                 value={this.state.selectedState}
-                onChange={(e: ChangeEvent<HTMLSelectElement>)=>this.handleStateSelected(e)}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => this.handleStateSelected(e)}
             >
                 {statesModel.map((stateRecord) => {
                     return (
@@ -68,6 +68,6 @@ export class StateDropdown extends Component<Props, State>
                     );
                 })}
             </select>
-        )
+        );
     }
 }
