@@ -7,7 +7,7 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-interface IntakeResponse extends Response {
+interface IIntakeResponse extends Response {
     success: boolean;
     status: number;
     data: IntakeType[];
@@ -36,12 +36,11 @@ export class IntakeProvider
      * @param {object} intakeData
      * @return {Promise<Response>}
      */
-    create(intakeData: IntakeType): Promise<IntakeResponse>
+    public create(intakeData: IntakeType): Promise<IIntakeResponse>
     {
         let uri = BASE_URI + 'intakes';
 
         uri += '?auth_key=' + this.authKey;
-
 
         return frak.post(uri, intakeData)
         .then((response) =>
@@ -62,7 +61,7 @@ export class IntakeProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val: string | number, byField: string, isSoftSearch: boolean = false): Promise<IntakeResponse>
+    public read(val: string | number, byField: string, isSoftSearch: boolean = false): Promise<IIntakeResponse>
     {
         let uri = BASE_URI;
 
@@ -106,7 +105,7 @@ export class IntakeProvider
      * @param {object} intakeData
      * @return {Promise<Response>}
      */
-    update(intakeData: IntakeType): Promise<IntakeResponse>
+    public update(intakeData: IntakeType): Promise<IIntakeResponse>
     {
     let uri = BASE_URI + 'intakes';
     uri += '?auth_key=' + this.authKey;

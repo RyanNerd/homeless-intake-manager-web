@@ -7,7 +7,7 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-interface StorageResponse extends Response {
+interface IStorageResponse extends Response {
     success: boolean;
     status: number;
     data: StorageType;
@@ -36,9 +36,9 @@ export class StorageProvider
      * @param {object} storageData
      * @return {Promise<Response>}
      */
-    create(storageData: StorageType): Promise<StorageResponse>
+    public create(storageData: StorageType): Promise<IStorageResponse>
     {
-        let uri = BASE_URI + 'storage' + '?auth_key=' + this.authKey;
+        const uri = BASE_URI + 'storage' + '?auth_key=' + this.authKey;
         return frak.post(uri, storageData)
         .then((response) =>
         {
@@ -58,7 +58,7 @@ export class StorageProvider
      * @param {boolean} [isSoftSearch]
      * @return {Promise<Response>}
      */
-    read(val: string | number, byField?: string, isSoftSearch: boolean = false): Promise<StorageResponse>
+    public read(val: string | number, byField?: string, isSoftSearch: boolean = false): Promise<IStorageResponse>
     {
         let uri = BASE_URI;
 
@@ -100,9 +100,9 @@ export class StorageProvider
      * @param {object} storageData
      * @return {Promise<Response>}
      */
-    update(storageData: StorageType): Promise<StorageResponse>
+    public update(storageData: StorageType): Promise<IStorageResponse>
     {
-        let uri = BASE_URI + 'storage' + '?auth_key=' + this.authKey;
+        const uri = BASE_URI + 'storage' + '?auth_key=' + this.authKey;
 
         return frak.patch(uri, storageData)
         .then((response) =>
