@@ -5,15 +5,16 @@ import {
         UUID
 } from "../utils/utilities";
 
-interface Props {
-    onImageChanged: Function
-    emptyImage?: string
-    readOnly: boolean
-    height: number
-    width: number
-    src?: string
-};
+interface IProps {
+    onImageChanged: (imageData: string) => void;
+    emptyImage?: string;
+    readOnly: boolean;
+    height: number;
+    width: number;
+    src?: string;
+}
 
+// tslint:disable-next-line: max-line-length
 const emptyImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII=";
 const imgId = UUID();
 const stringOrNull: string | null = null;
@@ -22,19 +23,18 @@ const initialState = {
     src: stringOrNull
 };
 
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 /**
  * ImageDrop Class
  *
  * TODO: Allow images to be dropped
  */
-export class ImageDrop extends Component<Props, State>
+export class ImageDrop extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
     private fileInput: React.RefObject<HTMLInputElement> = createRef();
-    imgClicked = false;
-
+    private imgClicked = false;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
@@ -43,7 +43,7 @@ export class ImageDrop extends Component<Props, State>
      * @param {State} prevState
      * @return {State | null}
      */
-    static getDerivedStateFromProps(nextProps: Props, prevState: State)
+    public static getDerivedStateFromProps(nextProps: IProps, prevState: State)
     {
         // Do we have src in the props?
         if (nextProps.src) {
@@ -73,7 +73,7 @@ export class ImageDrop extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleImageClick(e: MouseEvent<HTMLImageElement>)
+    private handleImageClick(e: MouseEvent<HTMLImageElement>)
     {
         e.preventDefault();
 
@@ -96,7 +96,7 @@ export class ImageDrop extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleFileChange(e: ChangeEvent<HTMLInputElement>)
+    private handleFileChange(e: ChangeEvent<HTMLInputElement>)
     {
         e.preventDefault();
 
@@ -137,7 +137,7 @@ export class ImageDrop extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    shouldFileDialogOpen(e: MouseEvent<HTMLInputElement>)
+    private shouldFileDialogOpen(e: MouseEvent<HTMLInputElement>)
     {
         if (!this.imgClicked) {
             e.preventDefault();
@@ -147,19 +147,20 @@ export class ImageDrop extends Component<Props, State>
         this.imgClicked = false;
     }
 
-    render()
+    public render()
     {
         const imageStyle = {objectFit: "contain", cursor: this.props.readOnly ? 'default' : 'pointer'} as CSSProperties;
 
         return(
             <div>
                 <img
+                    alt=""
                     style={imageStyle}
                     id={this.state.imgId}
                     src={this.state.src}
                     width={this.props.width || 175}
                     height={this.props.height || 175}
-                    onClick={(e)=>this.handleImageClick(e)}
+                    onClick={(e) => this.handleImageClick(e)}
                 />
 
                 <input
@@ -167,10 +168,10 @@ export class ImageDrop extends Component<Props, State>
                     style={{opacity: 0, zIndex: -999999}}
                     accept="image/*"
                     ref={this.fileInput}
-                    onChange={(e)=>this.handleFileChange(e)}
-                    onClick={(e)=>this.shouldFileDialogOpen(e)}
+                    onChange={(e) => this.handleFileChange(e)}
+                    onClick={(e) => this.shouldFileDialogOpen(e)}
                 />
             </div>
-        )
+        );
     }
 }
