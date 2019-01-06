@@ -15,7 +15,7 @@ import {
     isNameValid,
     isDigitsOnly
 } from "../../utils/validation";
-import {MemberGrid} from '../Member/MemberGrid'
+import {MemberGrid} from '../Member/MemberGrid';
 import {MemberEdit} from "../Member/MemeberEdit";
 import {MemberType} from "../../models/MemberModel";
 import {MemberPanel} from '../Member/MemberPanel';
@@ -27,10 +27,10 @@ import {ITarget} from "../../typings/HtmlInterfaces";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface Props {
-    householdProvider?: HouseholdProvider
-    memberProvider?: MemberProvider
-    context?: ContextType
+interface IProps {
+    householdProvider?: HouseholdProvider;
+    memberProvider?: MemberProvider;
+    context?: ContextType;
 }
 
 const initialMembers: MemberType[] = [];
@@ -47,7 +47,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const SearchPage = (props: Props) => (
+export const SearchPage = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <SearchPageBase
@@ -67,16 +67,16 @@ export const SearchPage = (props: Props) => (
  * TODO: Filter out inactive members from search
  * TODO: Search option for existing households
  */
-class SearchPageBase extends Component<Props, State>
+class SearchPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Default initial state
      *
      * @returns {State} state object initial hash key and values
      */
-    defaultState(): State
+    private defaultState(): State
     {
         // Set the Store currentMember and currentHousehold back to default.
         const methods = this.props.context.methods;
@@ -88,7 +88,7 @@ class SearchPageBase extends Component<Props, State>
     /**
      * Lifecycle hook - componentDidMount
      */
-    componentDidMount() {
+    public componentDidMount() {
         this.resetSearch();
     }
 
@@ -97,10 +97,10 @@ class SearchPageBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         const context = this.props.context;
-        this.setState(this.defaultState(), ()=>{
+        this.setState(this.defaultState(), () => {
             context.methods.setError(error);
         });
     }
@@ -109,11 +109,11 @@ class SearchPageBase extends Component<Props, State>
      * Sets state back to default also clears the search text boxes' values
      * as well as letting the LandingPage know that the state has changed.
      */
-    resetSearch()
+    private resetSearch()
     {
-        this.setState(this.defaultState(),()=>
+        this.setState(this.defaultState(), () =>
         {
-            let txtBadgeElement = document.getElementById('formBadge');
+            const txtBadgeElement = document.getElementById('formBadge');
             if (txtBadgeElement) {
                 txtBadgeElement.focus();
             }
@@ -125,18 +125,22 @@ class SearchPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleBadgeChange(e: MouseEvent<Button>)
+    private handleBadgeChange(e: MouseEvent<Button>)
     {
         e.preventDefault();
         const target = e.target as ITarget;
-        let badgeInput = target.value;
+        const badgeInput = target.value;
 
-        this.setState({disableNameInput: (badgeInput.length > 0), disableBadgeInput: (badgeInput.length> BADGE_LENGTH_MAX), badgeInput: badgeInput});
+        this.setState({
+            disableNameInput: (badgeInput.length > 0),
+            disableBadgeInput: (badgeInput.length > BADGE_LENGTH_MAX),
+            badgeInput: badgeInput
+        });
 
         // We only kick off a search if the entered badge # is entered in full
         if (badgeInput.length === BADGE_LENGTH_MAX) {
             // Parse the entered badge value into an int.
-            let id = parseInt(badgeInput);
+            const id = parseInt(badgeInput, 10);
 
             // If the badge number parses to 0 then show the invalid badge alert and bail.
             if (id === 0) {
@@ -158,7 +162,7 @@ class SearchPageBase extends Component<Props, State>
             .catch((error) =>
             {
                 this.onError(error);
-            })
+            });
         } else {
             this.setState({members: initialMembers});
         }
@@ -169,10 +173,10 @@ class SearchPageBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleNameChange(e: FormEvent<FormControl>)
+    private handleNameChange(e: FormEvent<FormControl>)
     {
         const target = e.target as ITarget;
-        let nameInput = target.value;
+        const nameInput = target.value;
 
         this.setState({disableBadgeInput: (nameInput.length > 0), nameInput: nameInput});
 
@@ -194,20 +198,19 @@ class SearchPageBase extends Component<Props, State>
             .catch((error) =>
             {
                 this.onError(error);
-            })
+            });
         }
     }
-
 
     /**
      * Fires when a member is selected from the MemberGrid
      *
      * @param {int} memberId
      */
-    onMemberSelected(memberId: number)
+    private onMemberSelected(memberId: number)
     {
         const methods = this.props.context.methods;
-        let memberInfo = getRecordById(parseInt(memberId), this.state.members) as MemberType;
+        const memberInfo = getRecordById(parseInt(memberId, 10), this.state.members) as MemberType;
 
         methods.setCurrentMember(memberInfo);
 
@@ -215,7 +218,7 @@ class SearchPageBase extends Component<Props, State>
         // UPDATE CURRENT HOUSEHOLD
         //
         this.props.householdProvider.read(memberInfo.HouseholdId)
-        .then((response)=>
+        .then((response) =>
         {
             if (response.success) {
                 methods.setCurrentHousehold(response.data);
@@ -223,7 +226,7 @@ class SearchPageBase extends Component<Props, State>
                 this.onError(response);
             }
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             this.onError(error);
         });
@@ -232,7 +235,7 @@ class SearchPageBase extends Component<Props, State>
         // UPDATE MEMBER COUNT (Storage context householdSize)
         //
         this.props.householdProvider.memberCount(memberInfo.HouseholdId)
-        .then((response)=>
+        .then((response) =>
         {
             if (typeof response === "number") {
                 methods.setHouseholdSize(response);
@@ -240,7 +243,7 @@ class SearchPageBase extends Component<Props, State>
                 this.onError(response);
             }
         })
-        .catch((error)=>
+        .catch((error) =>
         {
             this.onError(error);
         });
@@ -251,7 +254,7 @@ class SearchPageBase extends Component<Props, State>
      *
      * @param {MouseEvent} e
      */
-    handleMemberEdit(e: MouseEvent<Button>)
+    private handleMemberEdit(e: MouseEvent<Button>)
     {
         e.preventDefault();
         this.setState({showMemberEdit: true});
@@ -262,7 +265,7 @@ class SearchPageBase extends Component<Props, State>
      *
      * @param {MemberType} memberInfo
      */
-    handleMemberEditClose(memberInfo: MemberType)
+    private handleMemberEditClose(memberInfo: MemberType)
     {
         // Close the Member Edit modal
         this.setState({showMemberEdit: false});
@@ -278,7 +281,7 @@ class SearchPageBase extends Component<Props, State>
      *
      * @return {string | null} Null if valid characters, otherwise 'error' is returned.
      */
-    getLastNameValidation(): "success" | "warning" | "error" | null
+    private getLastNameValidation(): "success" | "warning" | "error" | null
     {
         if (!isNameValid(this.state.nameInput)) {
             return 'error';
@@ -291,20 +294,20 @@ class SearchPageBase extends Component<Props, State>
      *
      * @return {null | string} Return null if valid, otherwise 'error'
      */
-    getMemberNumberValidation(): "success" | "warning" | "error" | null
+    private getMemberNumberValidation(): "success" | "warning" | "error" | null
     {
         if (!isDigitsOnly(this.state.badgeInput)) {
-            return 'error'
+            return 'error';
         }
         return null;
     }
 
-    render()
+    public render()
     {
         const invalidBadgeAlert = (
             <Alert
                 bsStyle="danger"
-                onDismiss={()=>this.resetSearch()}>
+                onDismiss={() => this.resetSearch()}>
                 Invalid Member #
             </Alert>
         );
@@ -328,8 +331,8 @@ class SearchPageBase extends Component<Props, State>
                                 placeholder="Member #"
                                 value={this.state.badgeInput}
                                 onChange={(e: MouseEvent<Button>) => this.handleBadgeChange(e)}
-                                onFocus={()=>this.setState({badgeInputHasFocus: true})}
-                                onBlur={()=>this.setState({badgeInputHasFocus: false})}
+                                onFocus={() => this.setState({badgeInputHasFocus: true})}
+                                onBlur={() => this.setState({badgeInputHasFocus: false})}
                                 disabled={this.state.disableBadgeInput}
                                 maxLength={BADGE_LENGTH_MAX}
                             />
@@ -352,8 +355,8 @@ class SearchPageBase extends Component<Props, State>
                                 type="text"
                                 placeholder="Last Name"
                                 onChange={(e) => this.handleNameChange(e)}
-                                onFocus={()=>this.setState({nameInputHasFocus: true})}
-                                onBlur={()=>this.setState({nameInputHasFocus: false})}
+                                onFocus={() => this.setState({nameInputHasFocus: true})}
+                                onBlur={() => this.setState({nameInputHasFocus: false})}
                                 value={this.state.nameInput}
                                 disabled={this.state.disableNameInput}
                                 maxLength={50}
@@ -367,7 +370,7 @@ class SearchPageBase extends Component<Props, State>
                     <FormGroup controlId="formResetSearch">
                         <Col componentClass={ControlLabel} sm={3}>
                             <Button
-                                onClick={()=>this.resetSearch()}
+                                onClick={() => this.resetSearch()}
                             >
                                 Reset Search
                             </Button>
@@ -378,7 +381,7 @@ class SearchPageBase extends Component<Props, State>
                     {this.state.members && this.state.members.length > 0 &&
                     <MemberGrid
                         members={this.state.members}
-                        onMemberSelected={(memberId: number)=>this.onMemberSelected(memberId)}
+                        onMemberSelected={(memberId: number) => this.onMemberSelected(memberId)}
                     />
                     }
                 </div>
@@ -403,7 +406,7 @@ class SearchPageBase extends Component<Props, State>
                 {/* MemberEdit Modal */}
                 <MemberEdit
                     show={this.state.showMemberEdit}
-                    onHide={(memberInfo: MemberType)=>this.handleMemberEditClose(memberInfo)}
+                    onHide={(memberInfo: MemberType) => this.handleMemberEditClose(memberInfo)}
                     keyboard={true}
                     memberInfo={context.state.currentMember}
                 />
