@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom"
+import * as ReactDOM from "react-dom";
 import './styles/styles.scss';
 import 'react-datetime/css/react-datetime.css';
 import {StoreProvider} from "./components/StoreContext";
@@ -7,6 +7,7 @@ import {ErrorAlert} from "./components/ErrorAlert";
 import {LandingPage} from "./components/LandingPage";
 
 declare global {
+    // tslint:disable-next-line: interface-name
     interface Number {
         pad(size: number): string;
     }
@@ -24,11 +25,11 @@ Number.prototype.pad = function(size: number): string
     return s;
 };
 
-
 // Determine browser via duck type hunting.
 // Note: IE stupidity is handled in index.html
-let isChrome = (!!(window as any).chrome) as boolean;
+const isChrome = (!!(window as any).chrome) as boolean;
 
+/* tslint:disable: max-line-length */
 /*
   let isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
   let isFirefox = typeof InstallTrigger !== 'undefined';
