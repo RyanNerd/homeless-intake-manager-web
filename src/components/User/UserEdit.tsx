@@ -23,13 +23,13 @@ import {UserProvider} from "../../providers/UserProvider";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
 
-interface Props {
-    userInfo: UserType
-    userProvider?: UserProvider
-    keyboard: boolean
-    context?: ContextType
-    onHide: Function
-    show: boolean
+interface IProps {
+    userInfo: UserType;
+    userProvider?: UserProvider;
+    keyboard: boolean;
+    context?: ContextType;
+    onHide: (shouldHide: boolean) => void;
+    show: boolean;
 }
 
 type ValidationType = "error" | "warning" | "success" | null;
@@ -47,7 +47,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const UserEdit = (props: Props) => (
+export const UserEdit = (props: IProps) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <UserEditBase
@@ -64,9 +64,9 @@ export const UserEdit = (props: Props) => (
  *
  * TODO: Check for UserName (nick name) dupes as they are typed? - Requires modification to pantry-app
  */
-class UserEditBase extends Component<Props, State>
+class UserEditBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle hook - getDerivedStateFromProps
@@ -74,7 +74,7 @@ class UserEditBase extends Component<Props, State>
      * @param {Props} nextProps
      * @return {State | null}
      */
-    static getDerivedStateFromProps(nextProps: Props)
+    public static getDerivedStateFromProps(nextProps: IProps)
     {
         if (nextProps.show && nextProps.userInfo) {
             return {userInfo: nextProps.userInfo, shouldShow: true};
@@ -88,7 +88,7 @@ class UserEditBase extends Component<Props, State>
      *
      * @param {object | string} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -99,11 +99,11 @@ class UserEditBase extends Component<Props, State>
      * @param {MouseEvent} e
      * @param {boolean} shouldSave
      */
-    handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
+    private handleModalDismiss(e: MouseEvent<Button>, shouldSave: boolean)
     {
         // Was the save button clicked to dismiss?
         if (shouldSave) {
-            let userInfo = this.state.userInfo;
+            const userInfo = this.state.userInfo;
             if (userInfo.Id) {
                 this.props.userProvider.update(this.state.userInfo)
                 .then((response) =>
@@ -153,21 +153,21 @@ class UserEditBase extends Component<Props, State>
      *
      * @param {FormEvent} e
      */
-    handleOnChange(e: FormEvent<FormControl>)
+    private handleOnChange(e: FormEvent<FormControl>)
     {
-        let userInfo = this.state.userInfo;
+        const userInfo = this.state.userInfo;
 
         const target = e.target as ITarget;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         userInfo[name] = value;
-        this.setState({userInfo: userInfo}, ()=>{this.checkValidations()});
+        this.setState({userInfo: userInfo}, () => {this.checkValidations(); });
     }
 
     /**
      * Examine all field validations and set the valid____ state variables accordingly.
      */
-    checkValidations()
+    private checkValidations()
     {
         this.setState(
         {
@@ -176,7 +176,7 @@ class UserEditBase extends Component<Props, State>
             validPassword: this.validPasswordState(),
             validUserName: this.validNickNameState(),
             validEmail: this.validEmailState()
-        },()=>{
+        }, () => {
             this.setState({
                 canSave: this.canSave()
             });
@@ -188,10 +188,14 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {boolean} Return true if all validations pass, false otherwise.
      */
-    canSave(): boolean
+    private canSave(): boolean
     {
         if (this.state.userInfo) {
-            let canSave = ((this.state.userInfo.Email !== null && this.state.userInfo.Email.length !== 0) || (this.state.userInfo.UserName !== null && this.state.userInfo.UserName.length !== 0));
+            let canSave = (
+                (this.state.userInfo.Email !== null &&
+                 this.state.userInfo.Email.length !== 0) ||
+                (this.state.userInfo.UserName !== null && this.state.userInfo.UserName.length !== 0)
+            );
 
             canSave = canSave &&
                 this.state.validFirstName === null &&
@@ -223,7 +227,7 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the first name is not valid, null otherwise.
      */
-    validFirstNameState(): ValidationType
+    private validFirstNameState(): ValidationType
     {
         if (this.state.userInfo && this.state.userInfo.FirstName) {
             if (!isNameValid(this.state.userInfo.FirstName)) {
@@ -238,7 +242,7 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the last name is not valid, null otherwise.
      */
-    validLastNameState(): ValidationType
+    private validLastNameState(): ValidationType
     {
         if (this.state.userInfo && this.state.userInfo.LastName) {
             if (!isNameValid(this.state.userInfo.LastName)) {
@@ -253,7 +257,7 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the email is not valid, null otherwise.
      */
-    validEmailState(): ValidationType
+    private validEmailState(): ValidationType
     {
         if (this.state.userInfo && this.state.userInfo.Email) {
             if (!isEmailValid(this.state.userInfo.Email)) {
@@ -268,11 +272,11 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the password is not valid, null otherwise.
      */
-    validPasswordState(): ValidationType
+    private validPasswordState(): ValidationType
     {
         const userInfo = this.state.userInfo;
         if (userInfo && userInfo.Password !== null) {
-            if(userInfo.Password.length < 8) {
+            if (userInfo.Password.length < 8) {
                 return 'error';
             }
 
@@ -292,7 +296,7 @@ class UserEditBase extends Component<Props, State>
      *
      * @return {string | null} Returns 'error' if the nickname (UserName) is not valid, null otherwise.
      */
-    validNickNameState(): ValidationType
+    private validNickNameState(): ValidationType
     {
         if (this.state.userInfo && this.state.userInfo.UserName !== null) {
             if (!isNickNameValid(this.state.userInfo.UserName)) {
@@ -302,13 +306,13 @@ class UserEditBase extends Component<Props, State>
         return null;
     }
 
-    render()
+    public render()
     {
         return(
             <Modal
                 bsSize="lg"
                 show={this.state.shouldShow}
-                onHide={(e: MouseEvent<Button>)=>this.handleModalDismiss(e, false)}
+                onHide={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
                 keyboard={this.props.keyboard}
             >
                 <Modal.Header closeButton>
@@ -336,11 +340,15 @@ class UserEditBase extends Component<Props, State>
                                         maxLength={45}
                                         value={this.state.userInfo.FirstName}
                                         name="FirstName"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                         disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                                     />
                                 </Col>
-                                {this.state.validFirstName && <HelpBlock>Only alpha and dash characters allowed</HelpBlock>}
+                                {this.state.validFirstName &&
+                                    <HelpBlock>
+                                        Only alpha and dash characters allowed
+                                    </HelpBlock>
+                                }
                             </FormGroup>
 
                             <FormGroup
@@ -360,11 +368,15 @@ class UserEditBase extends Component<Props, State>
                                         maxLength={45}
                                         value={this.state.userInfo.LastName}
                                         name="LastName"
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                         disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                                     />
                                 </Col>
-                                {this.state.validLastName && <HelpBlock>Only alpha and dash characters allowed</HelpBlock>}
+                                {this.state.validLastName &&
+                                    <HelpBlock>
+                                        Only alpha and dash characters allowed
+                                    </HelpBlock>
+                                }
                             </FormGroup>
 
                             <FormGroup
@@ -384,7 +396,7 @@ class UserEditBase extends Component<Props, State>
                                         placeholder="user@email.com"
                                         maxLength={150}
                                         value={this.state.userInfo.Email}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                         disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                                     />
                                 </Col>
@@ -410,10 +422,14 @@ class UserEditBase extends Component<Props, State>
                                         placeholder="masked-marauder"
                                         maxLength={45}
                                         value={this.state.userInfo.UserName}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
-                                {this.state.validUserName && <HelpBlock>Only alpha, digit or dash characters are allowed</HelpBlock>}
+                                {this.state.validUserName &&
+                                    <HelpBlock>
+                                        Only alpha, digit or dash characters are allowed
+                                    </HelpBlock>
+                                }
                             </FormGroup>
 
                             <FormGroup
@@ -432,10 +448,14 @@ class UserEditBase extends Component<Props, State>
                                         type="password"
                                         maxLength={50}
                                         value={this.state.userInfo.Password}
-                                        onChange={(e)=>this.handleOnChange(e)}
+                                        onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
-                                {this.state.validPassword && <HelpBlock>Must be at least 8 characters and have no spaces</HelpBlock>}
+                                {this.state.validPassword &&
+                                    <HelpBlock>
+                                        Must be at least 8 characters and have no spaces
+                                    </HelpBlock>
+                                }
                             </FormGroup>
 
                             <Col
@@ -447,7 +467,7 @@ class UserEditBase extends Component<Props, State>
                             <Checkbox
                                 checked={this.state.userInfo.MustResetPassword}
                                 name="MustResetPassword"
-                                onChange={(e)=>this.handleOnChange(e)}
+                                onChange={(e) => this.handleOnChange(e)}
                                 disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                             >
                                 User must reset password on next login
@@ -462,7 +482,7 @@ class UserEditBase extends Component<Props, State>
                             <Checkbox
                                 checked={this.state.userInfo.IsAdmin}
                                 name="IsAdmin"
-                                onChange={(e)=>this.handleOnChange(e)}
+                                onChange={(e) => this.handleOnChange(e)}
                                 disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                             >
                                 User is an Administrator
@@ -477,7 +497,7 @@ class UserEditBase extends Component<Props, State>
                             <Checkbox
                                 checked={this.state.userInfo.Active}
                                 name="Active"
-                                onChange={(e)=>this.handleOnChange(e)}
+                                onChange={(e) => this.handleOnChange(e)}
                                 disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
                             >
                                 User is Active
@@ -489,13 +509,13 @@ class UserEditBase extends Component<Props, State>
 
                 <Modal.Footer>
                     <Button
-                        onClick={(e)=>this.handleModalDismiss(e, false)}
+                        onClick={(e) => this.handleModalDismiss(e, false)}
                     >
                         Cancel
                     </Button>
 
                     <Button
-                        onClick={(e)=>this.handleModalDismiss(e, true)}
+                        onClick={(e) => this.handleModalDismiss(e, true)}
                         bsStyle="primary"
                         disabled={!this.state.canSave}
                     >
@@ -503,6 +523,6 @@ class UserEditBase extends Component<Props, State>
                     </Button>
                 </Modal.Footer>
             </Modal>
-        )
+        );
     }
 }
