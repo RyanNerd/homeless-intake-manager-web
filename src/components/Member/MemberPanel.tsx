@@ -18,13 +18,13 @@ import {StorageType} from "../../models/StorageModel";
 
 const BADGE_LENGTH_MAX = 6;
 
-interface Props {
-    onMemberImageChanged: Function
-    storageProvider: StorageProvider
-    memberProvider: MemberProvider
-    readOnly: boolean
-    children: any
-    context: ContextType
+interface IProps {
+    onMemberImageChanged: () => void;
+    storageProvider: StorageProvider;
+    memberProvider: MemberProvider;
+    readOnly: boolean;
+    children: any;
+    context: ContextType;
 }
 
 const initialMemberInfo: MemberType = null;
@@ -33,7 +33,7 @@ const initialState = {
     memberInfo: initialMemberInfo,
     photo: initialPhoto
 };
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 export const MemberPanel = (props?: any) => (
     <StoreConsumer>
@@ -51,14 +51,14 @@ export const MemberPanel = (props?: any) => (
 /**
  * MemberPanel Class
  */
-class MemberPanelBase extends Component<Props, State>
+class MemberPanelBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Lifecycle Hook - componentDidMount
      */
-    componentDidMount()
+    public componentDidMount()
     {
         // Subscribe to store.context.currentMember state changes
         this.currentMemberUpdated = this.currentMemberUpdated.bind(this);
@@ -70,7 +70,7 @@ class MemberPanelBase extends Component<Props, State>
      *
      * @param {string | object} error
      */
-    onError(error: object | string)
+    private onError(error: object | string)
     {
         this.props.context.methods.setError(error);
     }
@@ -80,12 +80,12 @@ class MemberPanelBase extends Component<Props, State>
      *
      * @param {object} memberInfo
      */
-    currentMemberUpdated(memberInfo: MemberType)
+    private currentMemberUpdated(memberInfo: MemberType)
     {
         this.setState({memberInfo: memberInfo});
         if (memberInfo && memberInfo.PhotoId) {
             this.props.storageProvider.read(memberInfo.PhotoId)
-            .then((response)=>
+            .then((response) =>
             {
                 if (response.success) {
                     return response.data.Content;
@@ -93,11 +93,11 @@ class MemberPanelBase extends Component<Props, State>
                     throw response;
                 }
             })
-            .then((content)=>
+            .then((content) =>
             {
                 this.props.context.methods.setCurrentMemberPhoto(content);
             })
-            .catch((error)=>
+            .catch((error) =>
             {
                 this.onError(error);
             });
@@ -111,11 +111,11 @@ class MemberPanelBase extends Component<Props, State>
      *
      * @param {string} img DataURL for the new image.
      */
-    onImageChanged(img: string)
+    public onImageChanged(img: string)
     {
-        let memberInfo = {...this.state.memberInfo};
-        let mimeType = base64MimeType(img);
-        let photoStorage = {Id: memberInfo.PhotoId, Content: img, MimeType: mimeType} as StorageType;
+        const memberInfo = {...this.state.memberInfo};
+        const mimeType = base64MimeType(img);
+        const photoStorage = {Id: memberInfo.PhotoId, Content: img, MimeType: mimeType} as StorageType;
 
         // Do we have an existing record for Member.PhotoId?
         if (photoStorage.Id) {
@@ -141,7 +141,7 @@ class MemberPanelBase extends Component<Props, State>
                 if (response.success) {
                     memberInfo.PhotoId = response.data.Id;
                     this.props.memberProvider.update(memberInfo)
-                    .then((response)=>
+                    .then((response) =>
                     {
                         if (response.success) {
                             this.currentMemberUpdated(memberInfo);
@@ -149,10 +149,10 @@ class MemberPanelBase extends Component<Props, State>
                             this.onError(response);
                         }
                     })
-                    .catch((error)=>
+                    .catch((error) =>
                     {
                         this.onError(error);
-                    })
+                    });
                 }
             })
             .catch((error) =>
@@ -162,20 +162,23 @@ class MemberPanelBase extends Component<Props, State>
         }
     }
 
-    render()
+    public render()
     {
         // Do we have a member record? If not do not render.
         if (!this.state.memberInfo) {
             return (false);
         }
 
-        const birthYear  = this.state.memberInfo.BirthYear  ? parseInt(this.state.memberInfo.BirthYear).pad(4) : '';
-        const birthMonth = this.state.memberInfo.BirthMonth ? parseInt(this.state.memberInfo.BirthMonth).pad(2) : '';
-        const birthDay   = this.state.memberInfo.BirthDay   ? parseInt(this.state.memberInfo.BirthDay).pad(2) : '';
+        const birthYear  = this.state.memberInfo.BirthYear  ?
+                parseInt(this.state.memberInfo.BirthYear, 10).pad(4) : '';
+        const birthMonth = this.state.memberInfo.BirthMonth ?
+                parseInt(this.state.memberInfo.BirthMonth, 10).pad(2) : '';
+        const birthDay   = this.state.memberInfo.BirthDay   ?
+                parseInt(this.state.memberInfo.BirthDay, 10).pad(2) : '';
         const dob = birthYear + '-' + birthMonth + '-' + birthDay;
         const age = calculateAge(dob);
         const context = this.props.context;
-        const memberNumber = parseInt(this.state.memberInfo.Id).pad(BADGE_LENGTH_MAX);
+        const memberNumber = parseInt(this.state.memberInfo.Id, 10).pad(BADGE_LENGTH_MAX);
         const qrUrl = "http://bwipjs-api.metafloor.com/?bcid=code128&text=" + memberNumber + "&scale=1";
 
         return (
@@ -191,7 +194,9 @@ class MemberPanelBase extends Component<Props, State>
                         )
                     }
                     {this.state.memberInfo.FirstName + ' ' + this.state.memberInfo.LastName}
-                    {!this.state.memberInfo.Active && <span style={{color: "red", paddingLeft: "5px"}}>(INACTIVE)</span>}
+                    {!this.state.memberInfo.Active &&
+                        <span style={{color: "red", paddingLeft: "5px"}}>(INACTIVE)</span>
+                    }
                 </Panel.Heading>
                 <Panel.Body>
                     <Col sm={5}>
@@ -206,7 +211,7 @@ class MemberPanelBase extends Component<Props, State>
                         {context.state.householdSize &&
                             <p>Household Size: {context.state.householdSize}</p>
                         }
-                        <img src={qrUrl}/>
+                        <img alt="" src={qrUrl}/>
                     </Col>
 
                     <Col sm={5}>
@@ -215,13 +220,13 @@ class MemberPanelBase extends Component<Props, State>
                             width={200}
                             height={275}
                             readOnly={this.props.readOnly}
-                            onImageChanged={(img: string)=>this.onImageChanged(img)}
+                            onImageChanged={(img: string) => this.onImageChanged(img)}
                         />
                     </Col>
 
                 </Panel.Body>
                 {this.props.children}
             </Panel>
-        )
+        );
     }
 }
