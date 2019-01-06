@@ -13,13 +13,13 @@ import {UserPage} from "../User/UserPage";
 import {PovertyPage} from "../Poverty/PovertyPage";
 import {SyntheticEvent} from "react";
 
-interface AdminPageProps {
+interface IProps {
     context: ContextType;
 }
 
 const initialState = { key: 'users'};
 
-type State = Readonly<typeof initialState>
+type State = Readonly<typeof initialState>;
 
 export const AdminPage = (props?: any) => (
     <StoreConsumer>
@@ -35,9 +35,9 @@ export const AdminPage = (props?: any) => (
 /**
  * AdminPage Class - Tab Container
  */
-class AdminPageBase extends Component<AdminPageProps, State>
+class AdminPageBase extends Component<IProps, State>
 {
-    readonly state: State = initialState;
+    public readonly state: State = initialState;
 
     /**
      * Handle tab changed event
@@ -45,19 +45,19 @@ class AdminPageBase extends Component<AdminPageProps, State>
      * @param {string} key - Technically this is always a string for us, but react-bootstrap allows any
      * @param {SyntheticEvent} [e]
      */
-    handleSelect(key: any, e?: SyntheticEvent<any>)
+    private handleSelect(key: any, e?: SyntheticEvent<any>)
     {
         this.setState({key: key});
     }
 
-    render()
+    public render()
     {
         return(
             <Tab.Container
                 id="admin-tab-page"
                 defaultActiveKey="users"
                 activeKey={this.state.key}
-                onSelect={(key)=>this.handleSelect(key)}
+                onSelect={(key) => this.handleSelect(key)}
                 style={{marginTop: "25px", marginLeft: "15px", marginBottom: "5px", marginRight: "15px"}}
             >
                 <Row>
@@ -102,6 +102,6 @@ class AdminPageBase extends Component<AdminPageProps, State>
                     </Col>
                 </Row>
             </Tab.Container>
-        )
+        );
     }
 }
