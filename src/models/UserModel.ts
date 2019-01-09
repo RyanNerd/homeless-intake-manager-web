@@ -1,5 +1,3 @@
-const initialPassword: string | null = null;
-const initialAuthKey: string | null = null;
 export const userModel =
 {
     Id: 0,
@@ -9,8 +7,8 @@ export const userModel =
     Email: '',
     MustResetPassword: false,
     IsAdmin: false,
-    Password: initialPassword,
-    AuthKey: initialAuthKey,
+    Password: stringOrNull,
+    AuthKey: stringOrNull,
     Active: true
 };
 

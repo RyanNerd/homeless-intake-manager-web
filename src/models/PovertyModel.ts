@@ -1,8 +1,7 @@
-const numberOrNull: number | null = null;
-
 export const povertyModel =
 {
     Id: numberOrNull,
+    UserId: numberOrNull,
     Monthly: numberOrNull
 };
 
