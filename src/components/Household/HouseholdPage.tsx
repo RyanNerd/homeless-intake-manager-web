@@ -34,7 +34,6 @@ interface IProps {
 }
 
 const memberInfoOrNull: MemberType | null = null;
-const numberOrNull: number | null = null;
 const memberArray: MemberType[] = [];
 const initialState =
 {

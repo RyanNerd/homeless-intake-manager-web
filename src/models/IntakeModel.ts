@@ -1,6 +1,4 @@
 const today = new Date();
-const numberOrNull: number | null = null;
-const stringOrNull: string | null = null;
 
 export const intakeModel =
 {

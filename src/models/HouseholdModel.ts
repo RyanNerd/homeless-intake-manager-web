@@ -1,7 +1,6 @@
 const stateDefault = process.env.STATE_DEFAULT as string;
 const countyDefault = process.env.COUNTY_DEFAULT as string;
-const numberOrNull: number | null = null;
-const stringOrNull: string | null = null;
+
 export const householdModel =
     {
         Id: numberOrNull,

@@ -1,6 +1,3 @@
-const numberOrNull: number | null = null;
-const stringOrNull: string | null = null;
-
 export const memberModel =
 {
     Id: numberOrNull,
@@ -36,6 +33,8 @@ export const memberModel =
     HealthInsuranceCHIP: false,
     HealthInsurancePCN: false,
     PhotoId: numberOrNull,
+    DL: stringOrNull,
+    SSN: stringOrNull,
     Active: true
 };
 
