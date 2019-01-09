@@ -10,4 +10,4 @@ export const creditModel =
         Changed: stringOrNull
     };
 
-export type DocumentType = Readonly<typeof creditModel>;
+export type CreditType = Readonly<typeof creditModel>;
