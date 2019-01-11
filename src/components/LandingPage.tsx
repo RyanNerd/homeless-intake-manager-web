@@ -214,12 +214,14 @@ class LandingPageBase extends Component<IProps, {}>
                 </Fragment>
 
                 <p style={{fontSize: "xx-small", paddingTop: "15px"}}>
-                    © 2018 Digital Codex <a
+                    <span>© 2018 Digital Codex </span>
+                    <a
                         href={"https://github.com/RyanNerd/homeless-intake-manager-web/issues/new"}
                         target="_blank"
-                        rel="noreferrer">
-                    Report issues
-                </a>
+                        rel="noreferrer"
+                    >
+                        Report issues
+                    </a>
                 </p>
             </Fragment>
         );
