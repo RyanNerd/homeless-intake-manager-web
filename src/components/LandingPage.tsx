@@ -215,7 +215,7 @@ class LandingPageBase extends Component<IProps, {}>
 
                 <p style={{fontSize: "xx-small", paddingTop: "15px"}}>
                     © 2018 Digital Codex <a
-                        href={"https://github.com/RyanNerd/pantry-intake-web/issues/new"}
+                        href={"https://github.com/RyanNerd/homeless-intake-manager-web/issues/new"}
                         target="_blank"
                         rel="noreferrer">
                     Report issues

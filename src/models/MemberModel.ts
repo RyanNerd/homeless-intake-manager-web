@@ -41,4 +41,3 @@ export const memberModel =
 };
 
 export type MemberType = Readonly<typeof memberModel>;
-
