@@ -1,3 +1,5 @@
+import {stringOrNull} from "../typings/primitives";
+
 export const userModel =
 {
     Id: 0,
