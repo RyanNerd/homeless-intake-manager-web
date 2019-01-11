@@ -1,3 +1,5 @@
+import {numberOrNull} from "../typings/primitives";
+
 export const povertyModel =
 {
     Id: numberOrNull,

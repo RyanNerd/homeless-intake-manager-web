@@ -1,9 +1,9 @@
 import * as React from "react";
 import { Component } from "react";
-
 import {MemberType} from "../models/MemberModel";
 import {PovertyType} from "../models/PovertyModel";
 import {UserType} from "../models/UserModel";
+import {numberOrNull, stringOrNull} from "../typings/primitives";
 import {householdModel, HouseholdType} from "../models/HouseholdModel";
 
 export interface IStoreProviderProps {

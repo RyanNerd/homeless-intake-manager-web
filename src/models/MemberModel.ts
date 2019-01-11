@@ -1,3 +1,5 @@
+import {numberOrNull, stringOrNull} from "../typings/primitives";
+
 export const memberModel =
 {
     Id: numberOrNull,
