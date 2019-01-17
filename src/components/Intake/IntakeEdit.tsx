@@ -44,7 +44,7 @@ type SigpadType = {
         clear: () => void
         getTrimmedCanvas: Function
         fromDataURL: (signature: string) => void
-        isEmpty: () => void
+        isEmpty: () => boolean
     }
 };
 
