@@ -8,8 +8,8 @@ import {userModel, UserType} from "../../models/UserModel";
 import {UserProvider} from "../../providers/UserProvider";
 
 interface IProps {
-    userProvider?: UserProvider;
-    context?: ContextType;
+    context: ContextType;
+    userProvider: UserProvider;
 }
 
 const userInfoOrNull: UserType | null = null;
@@ -21,7 +21,7 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-export const UserPage = (props: IProps) => (
+export const UserPage = (props?: any) => (
     <StoreConsumer>
         {(context: ContextType) =>
             <UserPageBase
@@ -143,6 +143,7 @@ class UserPageBase extends Component<IProps, State>
 
                 {/* UserEdit Modal */}
                 <UserEdit
+                    userProvider={this.props.userProvider}
                     show={this.state.showUserEdit}
                     onHide={(shouldRefresh: boolean) => this.handleUserEditClose(shouldRefresh)}
                     keyboard={true}

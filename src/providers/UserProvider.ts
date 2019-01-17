@@ -7,7 +7,6 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-
 type UserPasswordResetType = {
     Email: string,
     Password: string,
@@ -30,10 +29,10 @@ export class UserProvider
      *
      * @param {string} authKey
      */
-    constructor(private authKey?: string)
+    constructor(private authKey: string)
     {
-        if (authKey && authKey.length === 0) {
-            throw new Error('authKey must be a non-empty string');
+        if (authKey.length === 0) {
+            throw new Error('authKey is a required argument');
         }
     }
 
@@ -45,7 +44,8 @@ export class UserProvider
      */
     public create(userData: UserType): Promise<IUserResponse>
     {
-        const uri = BASE_URI + 'users';
+        let uri = BASE_URI + 'users';
+        uri += '?auth_key=' + this.authKey;
 
         return frak.post(uri, userData)
         .then((response) =>
@@ -114,7 +114,8 @@ export class UserProvider
      */
     public update(userData: UserType): Promise<IUserResponse>
     {
-        const uri = BASE_URI + 'users';
+        let uri = BASE_URI + 'users';
+        uri += '?auth_key=' + this.authKey;
 
         return frak.patch(uri, userData)
         .then((response) =>

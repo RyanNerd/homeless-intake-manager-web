@@ -25,7 +25,7 @@ import {ITarget} from "../../typings/HtmlInterfaces";
 
 interface IProps {
     userInfo: UserType;
-    userProvider?: UserProvider;
+    userProvider: UserProvider;
     keyboard: boolean;
     context?: ContextType;
     onHide: (shouldHide: boolean) => void;
@@ -52,7 +52,6 @@ export const UserEdit = (props: IProps) => (
         {(context: ContextType) =>
             <UserEditBase
                 context={context}
-                userProvider={new UserProvider(context.state.currentUser.AuthKey)}
                 {...props}
             />
         }

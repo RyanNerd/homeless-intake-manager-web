@@ -12,7 +12,6 @@ import {
         ControlLabel
 } from 'react-bootstrap';
 import {ToasterAlert} from "../ToasterAlert";
-import {UserProvider} from "../../providers/UserProvider";
 import {hasWhitespace} from "../../utils/validation";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
@@ -35,7 +34,6 @@ const initialState = {
 };
 type State = Readonly<typeof initialState>;
 
-const userProvider = new UserProvider();
 const authenticationProvider = new AuthenticationProvider();
 
 export const LoginPage = (props?: any) => (
@@ -189,27 +187,27 @@ class LoginPageBase extends Component<IProps, State>
     {
         e.preventDefault();
 
-        const credentials =
-        {
-            Email: this.state.email,
-            Password: this.state.password,
-            NewPassword: this.state.newPassword
-        };
-
-        userProvider.resetPassword(credentials)
-        .then((response) =>
-        {
-            if (response.status === 200 && response.success) {
-                this.handleSignedIn(response.data);
-            } else {
-                this.setState({showBadCredentials: true, passwordReset: false});
-            }
-        })
-        .catch((error) =>
-        {
-            this.onError(error);
-            this.setState({passwordReset: false});
-        });
+        // const credentials =
+        // {
+        //     Email: this.state.email,
+        //     Password: this.state.password,
+        //     NewPassword: this.state.newPassword
+        // };
+        //
+        // userProvider.resetPassword(credentials)
+        // .then((response) =>
+        // {
+        //     if (response.status === 200 && response.success) {
+        //         this.handleSignedIn(response.data);
+        //     } else {
+        //         this.setState({showBadCredentials: true, passwordReset: false});
+        //     }
+        // })
+        // .catch((error) =>
+        // {
+        //     this.onError(error);
+        //     this.setState({passwordReset: false});
+        // });
     }
 
     /**
