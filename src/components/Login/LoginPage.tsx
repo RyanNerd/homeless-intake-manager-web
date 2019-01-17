@@ -16,6 +16,7 @@ import {UserProvider} from "../../providers/UserProvider";
 import {hasWhitespace} from "../../utils/validation";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
+import {AuthenticationProvider} from "../../providers/AuthenticationProvider";
 
 interface IProps {
     onSignedIn: () => void;
@@ -35,6 +36,7 @@ const initialState = {
 type State = Readonly<typeof initialState>;
 
 const userProvider = new UserProvider();
+const authenticationProvider = new AuthenticationProvider();
 
 export const LoginPage = (props?: any) => (
     <StoreConsumer>
@@ -122,7 +124,7 @@ class LoginPageBase extends Component<IProps, State>
             Password: this.state.password
         };
 
-        userProvider.authenticate(credentials)
+        authenticationProvider.authenticate(credentials)
         .then((response) =>
         {
             if (response.status === 200 && response.success) {
