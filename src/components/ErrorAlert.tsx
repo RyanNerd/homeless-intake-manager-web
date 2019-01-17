@@ -168,7 +168,7 @@ class ErrorAlertBase extends Component<IProps, State>
                                 <div dangerouslySetInnerHTML={{__html: this.state.bodyDetails}}/>
                             }
                     </div>
-                    <a href={"https://github.com/RyanNerd/pantry-intake-web/issues/new"}>Enter this issue in Github</a>
+                    <a href={"https://github.com/RyanNerd/homeless-intake-manager-web/issues/new"}>Enter this issue in Github</a>
                 </Alert>
             </div>
         );

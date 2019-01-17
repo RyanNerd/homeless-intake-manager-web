@@ -7,10 +7,6 @@ const frak = new Frak(false);
 // Base URI is determined from .env settings.
 const BASE_URI = process.env.API_PATH as string;
 
-type UserCredentialsType = {
-    Email: string,
-    Password: string
-};
 
 type UserPasswordResetType = {
     Email: string,
@@ -121,27 +117,6 @@ export class UserProvider
         const uri = BASE_URI + 'users';
 
         return frak.patch(uri, userData)
-        .then((response) =>
-        {
-            return response;
-        })
-        .catch((error) =>
-        {
-            return error;
-        });
-    }
-
-    /**
-     * Given an email/username and password as credentials authenticate the user
-     *
-     * @todo figure out correct return type
-     * @param {object} credentials
-     * @return {Promise<Response>}
-     */
-    public authenticate(credentials: UserCredentialsType)
-    {
-        const uri = BASE_URI + 'users/authenticate';
-        return frak.post(uri, credentials)
         .then((response) =>
         {
             return response;
