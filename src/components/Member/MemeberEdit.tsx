@@ -506,6 +506,30 @@ class MemberEditBase extends Component<IProps, State>
                                 </Col>
                             </FormGroup>
 
+                            <FormGroup controlId="member-ids">
+                                <Col componentClass={ControlLabel} sm={1}>SSN/DL</Col>
+                                <Col md={3}>
+                                    <FormControl
+                                        name="SSN"
+                                        type="text"
+                                        placeholder="000-00-0000"
+                                        maxLength={11}
+                                        value={this.state.memberInfo.SSN}
+                                        onChange={(e) => this.handleOnChange(e)}
+                                    />
+                                </Col>
+                                <Col sm={3}>
+                                    <FormControl
+                                        name="DL"
+                                        type="text"
+                                        placeholder="State Id#"
+                                        maxLength={20}
+                                        value={this.state.memberInfo.DL}
+                                        onChange={(e) => this.handleOnChange(e)}
+                                    />
+                                </Col>
+                            </FormGroup>
+
                             <FormGroup>
                                 <Col componentClass={ControlLabel} sm={1}>Status</Col>
                                 <Checkbox
@@ -524,6 +548,15 @@ class MemberEditBase extends Component<IProps, State>
                                     onChange={(e) => this.handleOnChange(e)}
                                 >
                                     Veteran
+                                </Checkbox>
+
+                                <Checkbox
+                                    inline
+                                    name="Active"
+                                    checked={this.state.memberInfo.Active}
+                                    onChange={(e) => this.handleOnChange(e)}
+                                >
+                                    Member is Active
                                 </Checkbox>
                             </FormGroup>
 
@@ -899,6 +932,8 @@ class MemberEditBase extends Component<IProps, State>
                                     </Checkbox>
                                 </Col>
                             </FormGroup>
+
+{/*
                             <FormGroup controlId="member-status">
                                 <Col componentClass={ControlLabel} sm={2}>Status</Col>
                                 <Col md={10}>
@@ -911,6 +946,7 @@ class MemberEditBase extends Component<IProps, State>
                                     </Checkbox>
                                 </Col>
                             </FormGroup>
+*/}
                         </Form>
                     </Modal.Body>
                 }
