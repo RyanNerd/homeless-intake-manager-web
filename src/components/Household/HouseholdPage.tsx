@@ -292,40 +292,21 @@ class HouseholdPageBase extends Component<IProps, State>
             currentHousehold.County = null;
         }
 
-        // householdInfo.Id will be null if we should insert a new household.
-        if (!context.state.currentHousehold.Id) {
-            this.props.householdProvider.create(currentHousehold)
-                .then((response) =>
-                {
-                    // Did the household get created?
-                    if (response.success) {
-                        methods.setCurrentHousehold(response.data);
-                        this.setState({showSaved: true, autoSave: false});
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-        } else {
-            this.props.householdProvider.update(currentHousehold)
-                .then((response) =>
-                {
-                    // Did the household get created?
-                    if (response.status === 200) {
-                        methods.setCurrentHousehold(response.data);
-                        this.setState({showSaved: true, autoSave: false});
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-        }
+        this.props.householdProvider.create(currentHousehold)
+        .then((response) =>
+        {
+            // Did the household get update/created?
+            if (response.success) {
+                methods.setCurrentHousehold(response.data);
+                this.setState({showSaved: true, autoSave: false});
+            } else {
+                this.onError(response);
+            }
+        })
+        .catch((error) =>
+        {
+            this.onError(error);
+        });
     }
 
     public render()

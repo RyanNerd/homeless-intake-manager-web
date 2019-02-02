@@ -111,38 +111,20 @@ class MemberEditBase extends Component<IProps, State>
     {
         // Was the save button clicked to dismiss?
         if (shouldSave) {
-            // memberInfo.Id will be zero or null if this is a new member.
-            if (this.state.memberInfo.Id === null || this.state.memberInfo.Id === 0) {
-                this.props.memberProvider.create(this.state.memberInfo)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        this.updateHouseholdCount(this.state.memberInfo.HouseholdId);
-                        this.props.onHide(response.data);
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            } else {
-                this.props.memberProvider.update(this.state.memberInfo)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        this.updateHouseholdCount(this.state.memberInfo.HouseholdId);
-                        this.props.onHide(response.data);
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            }
+            this.props.memberProvider.create(this.state.memberInfo)
+            .then((response) =>
+            {
+                if (response.success) {
+                    this.updateHouseholdCount(this.state.memberInfo.HouseholdId);
+                    this.props.onHide(response.data);
+                } else {
+                    this.onError(response);
+                }
+            })
+            .catch((error) =>
+            {
+                this.onError(error);
+            });
         } else {
             this.props.onHide(null);
         }
