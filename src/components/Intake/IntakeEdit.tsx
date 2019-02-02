@@ -228,37 +228,20 @@ class IntakeEditBase extends Component<IProps, State>
                 MimeType: 'image/png'
             } as StorageType;
 
-            if (intakeInfo.SignatureId) {
-                this.props.storageProvider.update(storageData)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        intakeInfo.SignatureId = response.data.Id;
-                        this.updateIntakeRecord(intakeInfo);
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            } else {
-                this.props.storageProvider.create(storageData)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        intakeInfo.SignatureId = response.data.Id;
-                        this.updateIntakeRecord(intakeInfo);
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            }
+            this.props.storageProvider.create(storageData)
+            .then((response) =>
+            {
+                if (response.success) {
+                    intakeInfo.SignatureId = response.data.Id;
+                    this.updateIntakeRecord(intakeInfo);
+                } else {
+                    this.onError(response);
+                }
+            })
+            .catch((error) =>
+            {
+                this.onError(error);
+            });
         } else {
             this.updateIntakeRecord(intakeInfo);
         }
@@ -271,35 +254,19 @@ class IntakeEditBase extends Component<IProps, State>
      */
     private updateIntakeRecord(intakeInfo: IntakeType)
     {
-        if (intakeInfo.Id) {
-            this.props.intakeProvider.update(intakeInfo)
-            .then((response) =>
-            {
-                if (response.status === 200) {
-                    this.props.onHide(true);
-                } else {
-                    this.onError(response);
-                }
-            })
-            .catch((error) =>
-            {
-                this.onError(error);
-            });
-        } else {
-            this.props.intakeProvider.create(intakeInfo)
-            .then((response) =>
-            {
-                if (response.status === 200) {
-                    this.props.onHide(true);
-                } else {
-                    this.onError(response);
-                }
-            })
-            .catch((error) =>
-            {
-                this.onError(error);
-            });
-        }
+        this.props.intakeProvider.create(intakeInfo)
+        .then((response) =>
+        {
+            if (response.status === 200) {
+                this.props.onHide(true);
+            } else {
+                this.onError(response);
+            }
+        })
+        .catch((error) =>
+        {
+            this.onError(error);
+        });
     }
 
     /**
@@ -312,8 +279,14 @@ class IntakeEditBase extends Component<IProps, State>
         const intakeInfo = this.state.intakeInfo as IntakeType;
 
         const target = e.target as ITarget;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        let value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
+
+        // Special Handling for FoodBoxWeight
+        if (name === 'FoodBoxWeight' && !value) {
+            value = 0.00;
+        }
+
         intakeInfo[name] = value;
 
         this.setState({intakeInfo: intakeInfo}, () =>
@@ -375,6 +348,21 @@ class IntakeEditBase extends Component<IProps, State>
     }
 
     /**
+     * FoodBoxWeightValidation
+     *
+     * @return {"success" | "warning" | "error" | null}
+     */
+    private foodBoxWeightValid(): "success" | "warning" | "error" | null
+    {
+        const intakeInfo = this.state.intakeInfo;
+        if (intakeInfo.FoodBoxWeight < 0 || intakeInfo.FoodBoxWeight > 500) {
+            return 'error';
+        }
+
+        return null;
+    }
+
+    /**
      * Returns true if all intake data fields have valid data.
      *
      * @return {boolean}
@@ -383,7 +371,7 @@ class IntakeEditBase extends Component<IProps, State>
     {
         const intakeInfo = this.state.intakeInfo;
         // Intake date must be valid (intakeDateValid() will be null if the date is valid).
-        if (!this.intakeDateValid()) {
+        if (!this.intakeDateValid() && !this.foodBoxWeightValid()) {
             // There must be at least one item check marked.
             if (intakeInfo.FoodBox    ||
                 intakeInfo.Perishable ||
@@ -512,7 +500,10 @@ class IntakeEditBase extends Component<IProps, State>
                         </FormGroup>
 
                         {this.state.intakeInfo.Id &&
-                            <FormGroup controlId="intake-weight-foodbox">
+                            <FormGroup
+                                controlId="intake-weight-foodbox"
+                                validationState={this.foodBoxWeightValid()}
+                            >
                                 <Col
                                     componentClass={ControlLabel}
                                     sm={4}

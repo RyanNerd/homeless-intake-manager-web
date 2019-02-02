@@ -103,45 +103,28 @@ class UserEditBase extends Component<IProps, State>
         // Was the save button clicked to dismiss?
         if (shouldSave) {
             const userInfo = this.state.userInfo;
-            if (userInfo.Id) {
-                this.props.userProvider.update(this.state.userInfo)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        const context = this.props.context;
 
-                        // If the user changed is the current authenticated user then essentially log out.
-                        if (userInfo.Id === context.state.currentUser.Id) {
-                            alert('Current logged in user account has changed. You will need to log in again.');
-                            window.location.reload();
-                            return;
-                        }
+            this.props.userProvider.create(userInfo)
+            .then((response) =>
+            {
+                if (response.success) {
+                    const context = this.props.context;
 
-                        // Close this modal and call parent onHide()
-                        this.props.onHide(true);
-                    } else {
-                        this.onError(response);
+                    // If the user changed is the current authenticated user then log out.
+                    if (userInfo.Id === context.state.currentUser.Id) {
+                        alert('Current logged in user account has changed. You will need to log in again.');
+                        window.location.reload();
+                        return;
                     }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            } else {
-                this.props.userProvider.create(userInfo)
-                .then((response) =>
-                {
-                    if (response.success) {
-                        this.props.onHide(true);
-                    } else {
-                        this.onError(response);
-                    }
-                })
-                .catch((error) =>
-                {
-                    this.onError(error);
-                });
-            }
+                    this.props.onHide(true);
+                } else {
+                    this.onError(response);
+                }
+            })
+            .catch((error) =>
+            {
+                this.onError(error);
+            });
         } else {
             this.props.onHide(false);
         }
