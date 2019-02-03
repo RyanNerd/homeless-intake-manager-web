@@ -31,27 +31,39 @@ export class MemberGrid extends Component<IProps, State>
     public readonly state: State = initialState;
 
     /**
+     * Lifecycle hook - getDerivedStateFromProps
+     *
+     * @param {IProps} nextProps
+     * @param {State} prevState
+     * @return {any}
+     */
+    public static getDerivedStateFromProps(nextProps: IProps, prevState: State)
+    {
+        // Is the initial state no members and nextProps have members? Initialize the array.
+        if (prevState.members === null && nextProps.members && nextProps.members.length > 0)
+        {
+            return {members: sortByColumnName(nextProps.members, prevState.sortBy) as MemberType[]};
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Lifecycle hook - componentDidUpdate
      *
      * @param {object} prevProps
      */
     public componentDidUpdate(prevProps: IProps)
     {
-        // Is this the initial assignment of member data?
-        if (this.state.members === null && this.props.members) {
-            this.setState({members: sortByColumnName(this.props.members, this.state.sortBy) as MemberType[]});
-        } else {
-            // Is the the members property not empty?
-            if (this.props.members) {
-                // Another reason to hate JS.
-                // There's not a native method to compare an array of objects so we have a hack via JSON.stringify:
-                const prevMembers = JSON.stringify(prevProps.members);
-                const currentMembers = JSON.stringify(this.props.members);
+        if (this.props.members) {
+            // Another reason to hate JS.
+            // There's not a native method to compare an array of objects so we have a hack via JSON.stringify:
+            const prevMembers = JSON.stringify(prevProps.members);
+            const currentMembers = JSON.stringify(this.props.members);
 
-                // Is there a change from the previous members array to the current members array?
-                if (prevMembers !== currentMembers) {
-                    this.setState({members: sortByColumnName(this.props.members, this.state.sortBy) as MemberType[]});
-                }
+            // Is there a change from the previous members array to the current members array?
+            if (prevMembers !== currentMembers) {
+                this.setState({members: sortByColumnName(this.props.members, this.state.sortBy) as MemberType[]});
             }
         }
     }

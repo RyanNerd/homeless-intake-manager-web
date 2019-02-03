@@ -258,7 +258,7 @@ class HouseholdPageBase extends Component<IProps, State>
             return;
         }
 
-        this.props.memberProvider.read(householdId, 'household_id')
+        this.props.memberProvider.read(householdId, 'HouseholdId')
         .then((response) =>
         {
             // Did we find the member(s)? If we didn't get any members it just means that this is a new household.

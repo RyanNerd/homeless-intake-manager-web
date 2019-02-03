@@ -183,7 +183,7 @@ class SearchPageBase extends Component<IProps, State>
         // We only kick off a search if the entered last name is 2 or more characters.
         if (nameInput.length > 1) {
             // Perform the search based on the entered last name using a Soft Search
-            this.props.memberProvider.read(nameInput, 'last_name', true)
+            this.props.memberProvider.read(nameInput, 'LastName', true)
             .then((response) =>
             {
                 // Did we find any member(s)?
