@@ -7,6 +7,7 @@ import {
         Modal,
         Button,
         Checkbox,
+        HelpBlock,
         FormGroup,
         FormControl,
         ControlLabel
@@ -282,11 +283,6 @@ class IntakeEditBase extends Component<IProps, State>
         let value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        // Special Handling for FoodBoxWeight
-        if (name === 'FoodBoxWeight' && !value) {
-            value = 0.00;
-        }
-
         intakeInfo[name] = value;
 
         this.setState({intakeInfo: intakeInfo}, () =>
@@ -355,7 +351,22 @@ class IntakeEditBase extends Component<IProps, State>
     private foodBoxWeightValid(): "success" | "warning" | "error" | null
     {
         const intakeInfo = this.state.intakeInfo;
-        if (intakeInfo.FoodBoxWeight < 0 || intakeInfo.FoodBoxWeight > 500) {
+        if (parseFloat(intakeInfo.FoodBoxWeight) < 0 || parseFloat(intakeInfo.FoodBoxWeight) > 500) {
+            return 'error';
+        }
+
+        return null;
+    }
+
+    /**
+     * PerishableWeightValidation
+     *
+     * @return {"success" | "warning" | "error" | null}
+     */
+    private perishableWeightValid(): "success" | "warning" | "error" | null
+    {
+        const intakeInfo = this.state.intakeInfo;
+        if (parseFloat(intakeInfo.PerishableWeight) < 0 || parseFloat(intakeInfo.PerishableWeight) > 500) {
             return 'error';
         }
 
@@ -371,7 +382,7 @@ class IntakeEditBase extends Component<IProps, State>
     {
         const intakeInfo = this.state.intakeInfo;
         // Intake date must be valid (intakeDateValid() will be null if the date is valid).
-        if (!this.intakeDateValid() && !this.foodBoxWeightValid()) {
+        if (!this.intakeDateValid() && !this.foodBoxWeightValid() && !this.perishableWeightValid()) {
             // There must be at least one item check marked.
             if (intakeInfo.FoodBox    ||
                 intakeInfo.Perishable ||
@@ -520,11 +531,18 @@ class IntakeEditBase extends Component<IProps, State>
                                         onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
+                                {this.foodBoxWeightValid() &&
+                                    <HelpBlock>
+                                        Invalid Weight
+                                    </HelpBlock>
+                                }
                             </FormGroup>
                         }
 
                         {this.state.intakeInfo.Id &&
-                            <FormGroup controlId="intake-weight-perishables">
+                            <FormGroup controlId="intake-weight-perishables"
+                                       validationState={this.perishableWeightValid()}
+                            >
                                 <Col
                                     componentClass={ControlLabel}
                                     sm={4}
@@ -541,6 +559,11 @@ class IntakeEditBase extends Component<IProps, State>
                                         onChange={(e) => this.handleOnChange(e)}
                                     />
                                 </Col>
+                                {this.perishableWeightValid() &&
+                                    <HelpBlock>
+                                        Invalid Weight
+                                    </HelpBlock>
+                                }
                             </FormGroup>
                         }
 
