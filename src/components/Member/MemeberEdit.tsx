@@ -284,7 +284,9 @@ class MemberEditBase extends Component<IProps, State>
             return 'warning';
         }
 
-        if (birthYear < 1850 || birthYear > currentYear) {
+        const now = new Date();
+        const minYear = now.getFullYear() - 120;
+        if (birthYear < minYear || birthYear > currentYear) {
             return 'error';
         }
 
