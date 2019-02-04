@@ -199,6 +199,8 @@ class SearchPageBase extends Component<IProps, State>
             {
                 this.onError(error);
             });
+        } else {
+            this.setState({members: initialMembers});
         }
     }
 
