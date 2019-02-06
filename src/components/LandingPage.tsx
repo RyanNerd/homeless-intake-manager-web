@@ -91,7 +91,8 @@ class LandingPageBase extends Component<IProps, {}>
 
                 {/* Show the Login tab container until the user is logged in then show the 'main' tab container */}
                 <Fragment>
-                    {!context.state.currentUser || !context.state.currentUser.AuthKey ? (
+                    {this.state.key === 'login' ?
+                    (
                         <Tab.Container
                             id="sign-in-tab"
                             defaultActiveKey="login"

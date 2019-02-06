@@ -16,6 +16,7 @@ import {hasWhitespace} from "../../utils/validation";
 import {UserType} from "../../models/UserModel";
 import {ITarget} from "../../typings/HtmlInterfaces";
 import {AuthenticationProvider} from "../../providers/AuthenticationProvider";
+import {UserProvider} from "../../providers/UserProvider";
 
 interface IProps {
     onSignedIn: () => void;
@@ -98,11 +99,15 @@ class LoginPageBase extends Component<IProps, State>
      */
     private handleSignedIn(userInfo: UserType)
     {
-        // Let the parent component know login is successful
-        this.props.onSignedIn();
-
-        // Update the Store
+        // Update the the current user in the state manager
         this.props.context.methods.setCurrentUser(userInfo);
+
+        if (userInfo.MustResetPassword) {
+            this.setState({passwordReset: true});
+        } else {
+            // Let the parent component know login is successful
+            this.props.onSignedIn();
+        }
     }
 
     /**
@@ -128,6 +133,7 @@ class LoginPageBase extends Component<IProps, State>
             if (response.status === 200 && response.success) {
                 if (response.data.MustResetPassword) {
                     this.setState({passwordReset: true});
+                    this.props.context.methods.setCurrentUser(response.data);
                 } else {
                     this.handleSignedIn(response.data);
                 }
@@ -187,29 +193,22 @@ class LoginPageBase extends Component<IProps, State>
     {
         e.preventDefault();
 
-        // const credentials =
-        // {
-        //     Email: this.state.email,
-        //     Password: this.state.password,
-        //     NewPassword: this.state.newPassword
-        // };
-        //
-        // userProvider.resetPassword(credentials)
-        // .then((response) =>
-        // {
-        //     if (response.status === 200 && response.success) {
-        //         this.handleSignedIn(response.data);
-        //     } else {
-        //         this.setState({showBadCredentials: true, passwordReset: false});
-        //     }
-        // })
-        // .catch((error) =>
-        // {
-        //     this.onError(error);
-        //     this.setState({passwordReset: false});
-        // });
+        const userProvider = new UserProvider(this.props.context.state.currentUser.AuthKey)
+        userProvider.resetPassword({Id: this.props.context.state.currentUser.Id, NewPassword: this.state.newPassword})
+        .then((response: any) =>
+        {
+            if (response.status === 200 && response.success) {
+                this.setState({passwordReset: false}, () => this.handleSignedIn(response.data));
+            } else {
+                this.setState({showBadCredentials: true});
+            }
+        })
+        .catch((error) =>
+        {
+            this.onError(error);
+            this.setState({passwordReset: false});
+        });
     }
-
     /**
      * Handle changes to the newPassword field
      *
@@ -317,6 +316,13 @@ class LoginPageBase extends Component<IProps, State>
                     >
                         You must enter a new password.
                     </ToasterAlert>
+
+                    {this.state.showBadCredentials &&
+                        <Alert bsStyle={"warning"}>
+                            <h3>New Password is invalid.</h3>
+                        </Alert>
+                    }
+
                     <FormGroup
                         controlId="new-password"
                         validationState={this.state.validPassword}

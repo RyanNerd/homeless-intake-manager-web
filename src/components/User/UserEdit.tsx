@@ -60,8 +60,6 @@ export const UserEdit = (props: IProps) => (
 
 /**
  * UserEdit Class
- *
- * TODO: Check for UserName (nick name) dupes as they are typed? - Requires modification to pantry-app
  */
 class UserEditBase extends Component<IProps, State>
 {
@@ -80,6 +78,16 @@ class UserEditBase extends Component<IProps, State>
         } else {
             return {shouldShow: false};
         }
+    }
+
+    /**
+     * Fires when the modal has played all the animations and is displayed.
+     * Similar to componentDidUpdate()
+     */
+    private handleOnEntered()
+    {
+        // Modal is now displayed so validate the userInfo.
+        this.checkValidations();
     }
 
     /**
@@ -102,7 +110,12 @@ class UserEditBase extends Component<IProps, State>
     {
         // Was the save button clicked to dismiss?
         if (shouldSave) {
-            const userInfo = this.state.userInfo;
+            const userInfo = {...this.state.userInfo};
+
+            // Make sure the password is null if MustResetPassword is not set.
+            if (!userInfo.MustResetPassword) {
+                userInfo.Password = null;
+            }
 
             this.props.userProvider.create(userInfo)
             .then((response) =>
@@ -173,27 +186,33 @@ class UserEditBase extends Component<IProps, State>
     private canSave(): boolean
     {
         if (this.state.userInfo) {
+            const userInfo = this.state.userInfo;
+
+            // Password can not be blank if the password is to be reset.
+            if (userInfo.MustResetPassword && !userInfo.Password) {
+                return false;
+            }
+
             let canSave = (
-                (this.state.userInfo.Email !== null &&
-                 this.state.userInfo.Email.length !== 0) ||
-                (this.state.userInfo.UserName !== null && this.state.userInfo.UserName.length !== 0)
+                (userInfo.Email !== null &&
+                 userInfo.Email.length !== 0) ||
+                (userInfo.UserName !== null && userInfo.UserName.length !== 0)
             );
 
             canSave = canSave &&
                 this.state.validFirstName === null &&
                 this.state.validLastName === null &&
-                this.state.validPassword === null &&
                 this.state.validUserName === null &&
                 this.state.validEmail === null;
 
             // Existing User?
-            if (this.state.userInfo.Id) {
+            if (userInfo.Id) {
                 return canSave;
             } else {
                 // New users must have a password
                 return canSave &&
-                       this.state.userInfo.Password &&
-                       this.state.userInfo.Password.length >= 8;
+                       userInfo.Password &&
+                       userInfo.Password.length >= 8;
             }
         }
 
@@ -296,6 +315,7 @@ class UserEditBase extends Component<IProps, State>
                 show={this.state.shouldShow}
                 onHide={(e: MouseEvent<Button>) => this.handleModalDismiss(e, false)}
                 keyboard={this.props.keyboard}
+                onEntered={() => this.handleOnEntered()}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>User Maintenance</Modal.Title>
@@ -414,6 +434,21 @@ class UserEditBase extends Component<IProps, State>
                                 }
                             </FormGroup>
 
+                            <Col
+                                componentClass={ControlLabel}
+                                md={2}
+                            >
+                                Reset
+                            </Col>
+                            <Checkbox
+                                checked={this.state.userInfo.MustResetPassword}
+                                name="MustResetPassword"
+                                onChange={(e) => this.handleOnChange(e)}
+                                disabled={this.state.userInfo.Id === null}
+                            >
+                                User must reset password on next login
+                            </Checkbox>
+
                             <FormGroup
                                 controlId="user-password"
                                 validationState={this.state.validPassword}
@@ -426,6 +461,7 @@ class UserEditBase extends Component<IProps, State>
                                 </Col>
                                 <Col md={3}>
                                     <FormControl
+                                        disabled={!this.state.userInfo.MustResetPassword}
                                         name="Password"
                                         type="password"
                                         maxLength={50}
@@ -434,26 +470,11 @@ class UserEditBase extends Component<IProps, State>
                                     />
                                 </Col>
                                 {this.state.validPassword &&
-                                    <HelpBlock>
-                                        Must be at least 8 characters and have no spaces
-                                    </HelpBlock>
+                                <HelpBlock>
+                                    Must be at least 8 characters and have no spaces
+                                </HelpBlock>
                                 }
                             </FormGroup>
-
-                            <Col
-                                componentClass={ControlLabel}
-                                md={2}
-                            >
-                                Reset
-                            </Col>
-                            <Checkbox
-                                checked={this.state.userInfo.MustResetPassword}
-                                name="MustResetPassword"
-                                onChange={(e) => this.handleOnChange(e)}
-                                disabled={this.state.userInfo && this.state.userInfo.UserName === 'admin'}
-                            >
-                                User must reset password on next login
-                            </Checkbox>
 
                             <Col
                                 componentClass={ControlLabel}
