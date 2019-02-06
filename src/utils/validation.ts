@@ -43,12 +43,17 @@ export function isLowercaseOnly(str: string): boolean
 
 /**
  * Returns true if the given string has any whitespace
+ * Note: a null string is considered to have white space.
  *
  * @param {string} str
  * @return {boolean}
  */
-export function hasWhitespace(str: string): boolean
+export function hasWhitespace(str: string | null): boolean
 {
+    if (!str) {
+        return true;
+    }
+
     if (str.length > 0) {
         return !(/^\S+$/.test(str));
     }

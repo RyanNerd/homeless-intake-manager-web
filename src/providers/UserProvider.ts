@@ -8,8 +8,7 @@ const frak = new Frak(false);
 const BASE_URI = process.env.API_PATH as string;
 
 type UserPasswordResetType = {
-    Email: string,
-    Password: string,
+    Id: number
     NewPassword: string
 };
 
@@ -137,7 +136,8 @@ export class UserProvider
      */
     public resetPassword(credentials: UserPasswordResetType)
     {
-        const uri = BASE_URI + 'users/password-reset';
+        let uri = BASE_URI + 'users/password-reset';
+        uri += '?auth_key=' + this.authKey;
         return frak.post(uri, credentials)
         .then((response) =>
         {
