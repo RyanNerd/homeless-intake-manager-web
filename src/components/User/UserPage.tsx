@@ -85,7 +85,7 @@ class UserPageBase extends Component<IProps, State>
         e.preventDefault();
 
         // Set the user record to an empty userModel and bring up the UserEdit modal form.
-        this.setState({userInfo: userModel, showUserEdit: true});
+        this.setState({userInfo: {...userModel}, showUserEdit: true});
     }
 
     /**
