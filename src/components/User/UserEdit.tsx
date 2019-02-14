@@ -193,6 +193,11 @@ class UserEditBase extends Component<IProps, State>
                 return false;
             }
 
+            // Password must be at least 8 characters if password is to be reset.
+            if (userInfo.MustResetPassword && userInfo.Password.length < 8) {
+                return false;
+            }
+
             let canSave = (
                 (userInfo.Email !== null &&
                  userInfo.Email.length !== 0) ||
