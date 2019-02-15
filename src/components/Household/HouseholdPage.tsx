@@ -77,6 +77,10 @@ class HouseholdPageBase extends Component<IProps, State>
         // Subscribe to store.context.currentHousehold state changes forcing save if IsDemo is updated
         this.householdUpdated = this.householdUpdated.bind(this);
         this.props.context.subscribe('currentHousehold', this.householdUpdated);
+        // Subscribe to store.context.currentMember state changes
+
+        this.currentMemberUpdated = this.currentMemberUpdated.bind(this);
+        this.props.context.subscribe('currentMember', this.currentMemberUpdated);
     }
 
     /**
@@ -128,6 +132,17 @@ class HouseholdPageBase extends Component<IProps, State>
         if (this.state.autoSave) {
             this.handleSave(); // This resets autoSave to false;
         }
+    }
+
+    /**
+     * Fires when the currentMember changes
+     *
+     * @param {object} memberInfo
+     */
+    private currentMemberUpdated(memberInfo: MemberType)
+    {
+        // Refresh the member grid if the current member data has changed.
+        this.populateMemberGrid(memberInfo.HouseholdId);
     }
 
     /**

@@ -104,6 +104,7 @@ class MemberPanelBase extends Component<IProps, State>
         } else {
             this.props.context.methods.setCurrentMemberPhoto(null);
         }
+        this.props.context.methods.setCurrentMember(memberInfo);
     }
 
     /**
