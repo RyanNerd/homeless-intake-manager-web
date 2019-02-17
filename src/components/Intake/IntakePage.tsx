@@ -276,7 +276,7 @@ class IntakePageBase extends Component<IProps, State>
                 {age < 18 &&
                     <Alert bsStyle={"warning"}>
                         <b style={{color: "red"}}>
-                            WARNING:
+                            <span>WARNING: </span>
                         </b>
                         <b>
                             Current member ({member.FirstName + ' ' + member.LastName}) is a minor.
@@ -287,7 +287,7 @@ class IntakePageBase extends Component<IProps, State>
                 {!member.Active &&
                     <Alert bsStyle={"danger"}>
                         <b style={{color: "red"}}>
-                            WARNING:
+                            <span>WARNING: </span>
                         </b>
                         <b>
                             Current member ({member.FirstName + ' ' + member.LastName}) is not active.
