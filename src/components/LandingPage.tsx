@@ -151,14 +151,14 @@ class LandingPageBase extends Component<IProps, {}>
 
                                         <NavItem
                                             eventKey="credit"
-                                            disabled={!context.state.currentMember}
+                                            disabled={true} /* TODO: {!context.state.currentMember} */
                                         >
                                             Credits
                                         </NavItem>
 
                                         <NavItem
                                             eventKey="reports"
-                                            disabled={!context.state.currentUser.IsAdmin}
+                                            disabled={true} /* TODO: {!context.state.currentUser.IsAdmin} */
                                         >
                                             Reports
                                         </NavItem>
