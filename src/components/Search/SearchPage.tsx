@@ -24,10 +24,12 @@ import {MemberProvider} from "../../providers/MemberProvider";
 import {HouseholdProvider} from "../../providers/HouseholdProvider";
 import {MouseEvent} from "react";
 import {ITarget} from "../../typings/HtmlInterfaces";
+import {householdModel, HouseholdType} from "../../models/HouseholdModel";
 
 const BADGE_LENGTH_MAX = 6;
 
 interface IProps {
+    tabChange: (key: string) => void;
     householdProvider?: HouseholdProvider;
     memberProvider?: MemberProvider;
     context?: ContextType;
@@ -118,6 +120,19 @@ class SearchPageBase extends Component<IProps, State>
                 txtBadgeElement.focus();
             }
         });
+    }
+
+    /**
+     * Fires when user clicks New Household button.
+     */
+    private enableHouseholdTab()
+    {
+        const context = this.props.context;
+        const houseHold: HouseholdType = {...householdModel};
+
+        context.methods.setCurrentHousehold(houseHold);
+        context.methods.setHouseholdTab(true);
+        this.props.tabChange('household');
     }
 
     /**
@@ -369,14 +384,23 @@ class SearchPageBase extends Component<IProps, State>
                         }
                     </FormGroup>
 
-                    <FormGroup controlId="formResetSearch">
+                    <FormGroup controlId="formResetOrNewHousehold">
                         <Col componentClass={ControlLabel} sm={3}>
                             <Button
                                 onClick={() => this.resetSearch()}
                             >
                                 Reset Search
                             </Button>
+
                             <span style={{paddingRight: "10px"}}/>
+
+                            {!context.state.currentMember &&
+                                <Button
+                                    onClick={() => this.enableHouseholdTab()}
+                                >
+                                    Add New Household
+                                </Button>
+                            }
                         </Col>
                     </FormGroup>
 

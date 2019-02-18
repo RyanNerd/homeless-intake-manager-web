@@ -16,6 +16,7 @@ interface IStoreConsumerProps {
 
 /* tslint:disable: ban-types */
 export type ContextMethods = {
+    setHouseholdTab: Function
     resetSearch: Function
     setCurrentUser: Function
     setCurrentMember: Function
@@ -32,6 +33,7 @@ const povertyArray: PovertyType[] = [];
 const initialError: string | object | null = null;
 const initialHouseholdModel: HouseholdType = {...householdModel};
 const initialState = {
+    householdTab: false,                     // Household tab is enabled state (true if new household)
     currentMember: memberOrNull,             // Current selected member from the SearchPage
     currentMemberPhoto: stringOrNull,        // Photo of current member
     currentUser: userOrNull,                 // Current authenticated user
@@ -196,6 +198,7 @@ export class StoreProvider extends Component<IStoreProviderProps, State>
      */
     public resetSearch()
     {
+        this._statechange('householdTag', false);
         this._statechange('currentMember', null);
         this._statechange('currentMemberPhoto', null);
         this._statechange('currentHousehold', {...householdModel});
@@ -219,6 +222,7 @@ export class StoreProvider extends Component<IStoreProviderProps, State>
                     methods:
                     {
                         resetSearch: () => this.resetSearch(),
+                        setHouseholdTab: (isEnabled: boolean) => this._statechange('householdTab', isEnabled),
                         setCurrentUser: (userInfo: UserType) => this._statechange('currentUser', userInfo),
                         setCurrentMember: (memberInfo: MemberType) => this._statechange('currentMember', memberInfo),
                         setCurrentHousehold: (householdInfo: HouseholdType) => this._statechange('currentHousehold', householdInfo),

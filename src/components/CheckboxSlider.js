@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import PropTypes from "prop-types";
 
 export class CheckboxSlider extends Component
@@ -18,7 +18,7 @@ export class CheckboxSlider extends Component
     render()
     {
         return (
-            <Fragment>
+            <>
                 <input
                     className="checkbox-slider"
                     id={this.props.id}
@@ -27,7 +27,7 @@ export class CheckboxSlider extends Component
                     onChange={(e)=>this.handleOnChange(e)}
                 />
                 <label className="checkbox-slider" htmlFor={this.props.id}>{this.props.labelText}</label>
-            </Fragment>
+            </>
         )
     }
 }

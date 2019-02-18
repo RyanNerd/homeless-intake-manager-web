@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Component, Fragment} from "react";
+import {Component} from "react";
 import {calculateAge} from "../../utils/utilities";
 import {MemberType} from "../../models/MemberModel";
 
@@ -41,9 +41,9 @@ export class MemberBadge extends Component<IProps, {}>
                 <p>Member # {memberNumber}</p>
 
                 {age < 18 &&
-                    <Fragment>
+                    <>
                         <p>Age: {age} <span style={{color: "red"}}> (Minor) </span></p>
-                    </Fragment>
+                    </>
                 }
 
                 {this.props.householdSize &&
