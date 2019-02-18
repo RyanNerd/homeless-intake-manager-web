@@ -1,8 +1,9 @@
 {
-  "name": "pantry-intake-web",
+  "name": "homeless-intake-manager-web",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Team Ryblo",
+  "author": "Ryan Jentzsch",
+  "contributors": ["Pablo Trujillo", "Kendall Haskell"],
   "license": "MIT",
   "scripts": {
     "start": "react-scripts-ts start",
