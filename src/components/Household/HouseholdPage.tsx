@@ -26,12 +26,12 @@ import {HouseholdProvider} from "../../providers/HouseholdProvider";
 import NewWindow from 'react-new-window';
 import {MemberBadge} from "../Member/MemberBadge";
 import {INodeListOf, ITarget} from "../../typings/HtmlInterfaces";
-import {numberOrNull} from "../../typings/primitives";
 
 interface IProps {
     context: ContextType;
     householdProvider: HouseholdProvider;
     memberProvider: MemberProvider;
+    tabChange: (key: string) => void;
 }
 
 const memberInfoOrNull: MemberType | null = null;
@@ -40,7 +40,6 @@ const initialState =
 {
     selectedMemberInfo: memberInfoOrNull,
     showMemberEdit: false,
-    householdId: numberOrNull,
     members: memberArray,
     showMemberBadge: false,
     householdNameHasFocus: false,
@@ -141,8 +140,11 @@ class HouseholdPageBase extends Component<IProps, State>
      */
     private currentMemberUpdated(memberInfo: MemberType)
     {
-        // Refresh the member grid if the current member data has changed.
-        this.populateMemberGrid(memberInfo.HouseholdId);
+        // Do we have members? (Could be a new Household so this shouldn't fire off).
+        if (memberInfo && memberInfo.HouseholdId) {
+            // Refresh the member grid if the current member data has changed.
+            this.populateMemberGrid(memberInfo.HouseholdId);
+        }
     }
 
     /**
@@ -310,7 +312,7 @@ class HouseholdPageBase extends Component<IProps, State>
         this.props.householdProvider.create(currentHousehold)
         .then((response) =>
         {
-            // Did the household get update/created?
+            // Did the household get updated/created?
             if (response.success) {
                 methods.setCurrentHousehold(response.data);
                 this.setState({showSaved: true, autoSave: false});
@@ -597,24 +599,41 @@ class HouseholdPageBase extends Component<IProps, State>
                                     </Button>
                                 )}
 
+
+
+                                {context.state.householdTab && !context.state.currentMember &&
+                                    <>
+                                        <span style={{paddingRight: "5px"}}/>
+                                            <Button
+                                                onClick={() => {
+                                                        context.methods.setHouseholdTab(false);
+                                                        context.methods.resetSearch();
+                                                        this.props.tabChange('search');
+                                                    }
+                                                }
+                                            >
+                                                Cancel
+                                            </Button>
+                                    </>
+                                }
+
                                 <span style={{paddingRight: "5px"}}/>
                             </Col>
-                        </FormGroup>
 
-                        {context.state.currentUser.IsAdmin &&
-                            <FormGroup controlId="household-demo">
-                                <Col componentClass={ControlLabel} sm={3}/>
-                                <Col sm={6}>
-                                    <Button
-                                        bsStyle="danger"
-                                        onClick={(e) => this.handleDemo(e)}
-                                        disabled={!context.state.currentHousehold.HouseholdName}
-                                    >
-                                        {context.state.currentHousehold.IsDemo ? 'Remove' : 'Make'} Household Demo
-                                    </Button>
-                                </Col>
-                            </FormGroup>
-                        }
+                            {context.state.currentUser.IsAdmin &&
+                                <>
+                                    <Col sm={3}>
+                                        <Button
+                                            bsStyle="danger"
+                                            onClick={(e) => this.handleDemo(e)}
+                                            disabled={!context.state.currentHousehold.HouseholdName}
+                                        >
+                                            {context.state.currentHousehold.IsDemo ? 'Remove' : 'Make'} Household Demo
+                                        </Button>
+                                    </Col>
+                                </>
+                            }
+                        </FormGroup>
                     </Col>
 
                     {context.state.currentMember && context.state.currentMember.Id &&

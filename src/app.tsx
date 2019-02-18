@@ -4,7 +4,7 @@ import './styles/styles.scss';
 import 'react-datetime/css/react-datetime.css';
 import {StoreProvider} from "./components/StoreContext";
 import {ErrorAlert} from "./components/ErrorAlert";
-import {LandingPage} from "./components/LandingPage";
+import {LandingPage} from "./components/Landing/LandingPage";
 
 declare global {
     // tslint:disable-next-line: interface-name

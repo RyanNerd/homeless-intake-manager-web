@@ -1,7 +1,6 @@
 import * as React from "react";
 import {Component, SyntheticEvent} from "react";
-import { Fragment } from "react";
-import {StoreConsumer} from "./StoreContext";
+import {StoreConsumer} from "../StoreContext";
 import {
     Col,
     Row,
@@ -10,14 +9,14 @@ import {
     NavItem,
     PageHeader, TabContainer
 } from 'react-bootstrap';
-import {AdminPage} from "./Admin/AdminPage";
-import {LoginPage} from "./Login/LoginPage";
-import {IntakePage} from "./Intake/IntakePage";
-import {SearchPage} from "./Search/SearchPage";
-import {ToasterAlert} from "./ToasterAlert";
-import {HouseholdPage} from "./Household/HouseholdPage";
-import { ContextType } from "./StoreContext";
-import pantry from "./../images/pantry.png";
+import {AdminPage} from "../Admin/AdminPage";
+import {LoginPage} from "../Login/LoginPage";
+import {IntakePage} from "../Intake/IntakePage";
+import {SearchPage} from "../Search/SearchPage";
+import {ToasterAlert} from "../ToasterAlert";
+import {HouseholdPage} from "../Household/HouseholdPage";
+import { ContextType } from "../StoreContext";
+import pantry from "../../images/pantry.png";
 
 interface IProps {
     context?: ContextType;
@@ -72,12 +71,20 @@ class LandingPageBase extends Component<IProps, {}>
         this.setState({key: key});
     }
 
+    /**
+     * Handle tab changed event (from child components)
+     */
+    private handleTabChange(key: string)
+    {
+        this.setState({key: key});
+    }
+
     public render()
     {
         const context = this.props.context;
 
         return (
-            <Fragment>
+            <>
                 <PageHeader style={{textAlign: "center"}}>{organizationName} Intake</PageHeader>
 
                 {!context.state.currentUser &&
@@ -90,7 +97,7 @@ class LandingPageBase extends Component<IProps, {}>
                 {!this.props.isChrome && notChromeAlert}
 
                 {/* Show the Login tab container until the user is logged in then show the 'main' tab container */}
-                <Fragment>
+                <>
                     {this.state.key === 'login' ?
                     (
                         <Tab.Container
@@ -132,12 +139,14 @@ class LandingPageBase extends Component<IProps, {}>
                                     <Nav bsStyle="tabs">
                                         <NavItem
                                             eventKey="search"
+                                            disabled={context.state.householdTab}
                                         >
                                             Search
                                         </NavItem>
 
                                         <NavItem
                                             eventKey="household"
+                                            disabled={!(context.state.currentMember || context.state.householdTab)}
                                         >
                                             Household
                                         </NavItem>
@@ -175,7 +184,9 @@ class LandingPageBase extends Component<IProps, {}>
                                 <Col sm={12}>
                                     <Tab.Content animation style={{marginTop: "10px"}}>
                                         <Tab.Pane eventKey="search">
-                                            <SearchPage/>
+                                            <SearchPage
+                                                tabChange={(key: string)=>this.handleTabChange(key)}
+                                            />
                                         </Tab.Pane>
 
                                         <Tab.Pane eventKey="intake">
@@ -189,7 +200,9 @@ class LandingPageBase extends Component<IProps, {}>
                                         </Tab.Pane>
 
                                         <Tab.Pane eventKey="household">
-                                            <HouseholdPage/>
+                                            <HouseholdPage
+                                                tabChange={(key: string)=>this.handleTabChange(key)}
+                                            />
                                         </Tab.Pane>
 
                                         <Tab.Pane eventKey="reports">
@@ -212,7 +225,7 @@ class LandingPageBase extends Component<IProps, {}>
                             </span> {context.state.currentUser.LastName}, {context.state.currentUser.FirstName}
                         </p>
                     }
-                </Fragment>
+                </>
 
                 <p style={{fontSize: "xx-small", paddingTop: "15px"}}>
                     <span>© 2018 Digital Codex </span>
@@ -224,7 +237,7 @@ class LandingPageBase extends Component<IProps, {}>
                         Report issues
                     </a>
                 </p>
-            </Fragment>
+            </>
         );
     }
 }
