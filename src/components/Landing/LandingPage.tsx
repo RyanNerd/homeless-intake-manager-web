@@ -24,7 +24,7 @@ interface IProps {
 }
 
 const organizationName = process.env.ORGANIZATION_NAME ? process.env.ORGANIZATION_NAME : 'Shelter';
-
+const version = '0.1.0';
 /**
  * 𐐃𐑊 𐐷𐐳𐑉 𐐽𐐬𐐩𐑅𐑆 𐐸𐐰𐑂 𐐿𐐲𐑌𐑅𐐹𐐴𐐲𐑉𐐼 𐐻𐐭 𐐺𐑉𐐮𐑍 𐐷𐐭 𐐻𐐭 𐑄𐐮𐑅 𐑂𐐯𐑉𐐨 𐑋𐐬𐑋𐐲𐑌𐐻 𐐮𐑌 𐐻𐐴𐑋.
  */
@@ -228,7 +228,7 @@ class LandingPageBase extends Component<IProps, {}>
                 </>
 
                 <p style={{fontSize: "xx-small", paddingTop: "15px"}}>
-                    <span>© 2018 Digital Codex </span>
+                    <span>© 2018 Digital Codex version {version}</span>
                     <a
                         href={"https://github.com/RyanNerd/homeless-intake-manager-web/issues/new"}
                         target="_blank"
